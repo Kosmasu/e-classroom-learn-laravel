@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\MahasiswaController;
@@ -40,14 +41,14 @@ Route::get('/', function () {
 });
 
 Route::prefix('/register')->group(function () {
-  Route::get('/', function () {})->name('auth.register.mahasiswa') ; //register mahasiswa
-  Route::get('/dosen', function () {})->name('auth.register.dosen'); //register dosen
+  Route::get('/', [AuthController::class, 'pageRegisterMahasiswa'])->name('auth.register.mahasiswa') ; //register mahasiswa
+  Route::get('/dosen', [AuthController::class, 'pageRegisterDosen'])->name('auth.register.dosen'); //register dosen
 });
 
 Route::prefix('/admin')->group(function () {
-  Route::get('/', function () {})->name('admin.home'); //home admin
-  Route::get('/dosen', function () {})->name('admin.dosen'); //list dosen
-  Route::get('/mahasiswa', function () {})->name('admin.mahasiswa'); //list mahasiswa
+  Route::get('/',[AdminController::class, 'pageHome'])->name('admin.home'); //home admin
+  Route::get('/dosen', [AdminController::class, 'pageDosen'])->name('admin.dosen'); //list dosen
+  Route::get('/mahasiswa', [AdminController::class, 'pageMahasiswa'])->name('admin.mahasiswa'); //list mahasiswa
 });
 
 Route::prefix('/dosen')->group(function () {

@@ -22,7 +22,7 @@
             <a href="{{ route('mahasiswa.home') }}">
               <button class="w-full px-2 py-1 mt-4 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400">Mahasiswa</button>
             </a>
-            <a href="{{ route('') }}">
+            <a href="{{ route('admin.home') }}">
               <button class="w-full px-2 py-1 mt-4 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400">Admin</button>
             </a>
           <span class="text-xs">Button sementara untuk keperluan navigasi</span>

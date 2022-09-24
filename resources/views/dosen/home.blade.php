@@ -1,4 +1,4 @@
-@extends('layout.user.dosen.main')
+@extends('layout.dosen.main')
 
 @section('content')
   <div class="container">
