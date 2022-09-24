@@ -33,29 +33,29 @@ Route::get('/', function () {
 -	Halaman Profile untuk mahasiswa (/mahasiswa/profile)
 */
 
-Route::get('/login', [AuthController::class, 'pageLogin']); //login
+Route::get('/login', [AuthController::class, 'pageLogin'])->name('auth.login'); //login
 
 Route::get('/', function () {
   return redirect('/login'); //redirect
 });
 
 Route::prefix('/register')->group(function () {
-  Route::get('/', function () {}); //register mahasiswa
-  Route::get('/dosen', function () {}); //register dosen
+  Route::get('/', function () {})->name('auth.register.mahasiswa') ; //register mahasiswa
+  Route::get('/dosen', function () {})->name('auth.register.dosen'); //register dosen
 });
 
 Route::prefix('/admin')->group(function () {
-  Route::get('/', function () {}); //home admin
-  Route::get('/dosen', function () {}); //list dosen
-  Route::get('/mahasiswa', function () {}); //list mahasiswa
+  Route::get('/', function () {})->name('admin.home'); //home admin
+  Route::get('/dosen', function () {})->name('admin.dosen'); //list dosen
+  Route::get('/mahasiswa', function () {})->name('admin.mahasiswa'); //list mahasiswa
 });
 
 Route::prefix('/dosen')->group(function () {
-  Route::get('/', [DosenController::class, 'pageHome']); //home dosen
-  Route::get('/profile', [DosenController::class, 'pageProfile']); //profile dosen
+  Route::get('/', [DosenController::class, 'pageHome'])->name('dosen.home'); //home dosen
+  Route::get('/profile', [DosenController::class, 'pageProfile'])->name('dosen.profile'); //profile dosen
 });
 
 Route::prefix('/mahasiswa')->group(function () {
-  Route::get('/', [MahasiswaController::class, 'pageHome']); //home mahasiswa
-  Route::get('/profile', [MahasiswaController::class, 'pageProfile']); //profile mahasiswa
+  Route::get('/', [MahasiswaController::class, 'pageHome'])->name('mahasiswa.home'); //home mahasiswa
+  Route::get('/profile', [MahasiswaController::class, 'pageProfile'])->name('mahasiswa.profile'); //profile mahasiswa
 });

@@ -18,7 +18,7 @@
       <div class="mt-1">
         <p class="text-xs">
           Don't have an account? register
-          <a class="text-yellow-primary hover:underline" href="{{ url('/register') }}">here</a>
+          <a class="text-yellow-primary hover:underline" href="{{ route('register.mahasiswa') }}">here</a>
         </p>
       </div>
     </div>
