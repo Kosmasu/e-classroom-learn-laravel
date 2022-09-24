@@ -2,7 +2,7 @@
   <div class="w-full flex container h-full">
     <a href="{{ route('dosen.home') }}">
       <div class="flex items-center h-full">
-        <img class="w-12 h-12" src="{{ asset('images/istts_warna-min.png') }}" alt="">
+        <img class="w-12 h-12" src="{{ asset('images/istts_warna-min.png') }}" alt="stts">
         <h1 class="pl-2 font-semibold text-2xl">E-Classroom</h1>
       </div>
     </a>
