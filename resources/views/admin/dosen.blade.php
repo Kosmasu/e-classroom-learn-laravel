@@ -2,6 +2,6 @@
 
 @section('content')
   <div class="container mx-auto">
-    <h1 class="text-xl font-semibold">Ini Home Admin</h1>
+    <h1 class="text-xl font-semibold">Ini Admin Dosen</h1>
   </div>
 @endsection
