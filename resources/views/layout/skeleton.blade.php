@@ -32,7 +32,7 @@
     };
   </script>
 
-<body class="text-gray-900">
+<body class="text-gray-900 bg-gray-50">
   @yield('body')
 </body>
 
