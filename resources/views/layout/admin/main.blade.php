@@ -1,16 +1,17 @@
 @extends('layout.skeleton')
 
 @section('body')
-  @php
+  {{-- @php
     $urls = explode('/', URL::current());
     $urls = array_splice($urls, 3);
-  @endphp
+  @endphp --}}
   <div class="flex flex-row">
     <div class="flex-shrink-0">
       @include('layout.admin.sidebar')
     </div>
     <main class="w-full p-8">
-      <div>
+      <x-admin.breadcrumb></x-breadcrumb>
+      {{-- <div>
         <ul class="flex flex-row space-x-2 text-lg text-slate-600">
           @for ($i = 0; $i < count($urls); $i++)
             @php
@@ -25,7 +26,7 @@
             {!! $i != count($urls) - 1 ? '<span>/</span>' : '' !!}
           @endfor
         </ul>
-      </div>
+      </div> --}}
       @yield('content')
     </main>
   </div>
