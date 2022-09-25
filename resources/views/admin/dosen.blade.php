@@ -1,7 +1,13 @@
 @extends('layout.admin.main')
 
 @section('content')
-  <div class="w-full rounded lg:rounded-lg shadow lg:shadow-lg overflow-hidden border border-gray-900">
+  <div>
+    <h1 class="text-center text-2xl font-semibold">
+      Master Dosen
+    </h1>
+  </div>
+
+  <div class="w-full rounded lg:rounded-lg shadow lg:shadow-lg overflow-hidden border border-gray-900 mt-8">
     <table class="table-auto min-w-full px-2 py-1">
       <thead>
         <tr class="bg-navy-primary text-gray-200">
