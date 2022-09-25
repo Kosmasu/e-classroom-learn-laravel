@@ -27,3 +27,9 @@
     </a>
   </div>
 </nav>
+
+<style>
+.dropdown:hover .dropdown-content {
+  display: block
+}
+</style>
