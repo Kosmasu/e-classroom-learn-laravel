@@ -4,6 +4,7 @@
       @php
         $preUrl = '';
       @endphp
+      {{-- concate url sebelumnya --}}
       @for ($j = 0; $j < $i; $j++)
         @php
           $preUrl = $preUrl . $urls[$i] . '/';
