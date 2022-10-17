@@ -10,7 +10,7 @@
       <div class="dropdown inline-block relative flex items-center h-full">
         <div
           class="pl-4 pr-1 py-1 rounded-full bg-gray-200  flex justify-center items-center hover:cursor-pointer hover:bg-gray-300">
-          <span class="font-semibold text-navy-primary uppercase">Kenny</span>
+          <span class="font-semibold text-navy-primary uppercase">Mahasiswa</span>
           <div
             class="w-10 h-10 ml-2 p-2 rounded-full bg-navy-primary flex justify-center items-center text-navy-primary">
             <i class="text-gray-200 fa-solid fa-user text-xl"></i>

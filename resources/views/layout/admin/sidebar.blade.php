@@ -24,13 +24,28 @@
       <div class="pl-2">
         <a href="{{ route('admin.mahasiswa') }}">
           <div class="hover:bg-navy-secondary hover:font-medium rounded px-1 py-2 pl-2
-          {{ (URL::current() == 'http://127.0.0.1:8000/admin/mahasiswa') ? 'bg-navy-secondary font-medium' : '' }}
+          {{ (URL::current() == route('admin.mahasiswa')) ? 'bg-navy-secondary font-medium' : '' }}
           ">Mahasiswa</div>
         </a>
         <a href="{{ route('admin.dosen') }}">
           <div class="hover:bg-navy-secondary hover:font-medium rounded px-1 py-2 pl-2
-          {{ (URL::current() == 'http://127.0.0.1:8000/admin/dosen') ? 'bg-navy-secondary font-medium' : '' }}
+          {{ (URL::current() == route('admin.dosen')) ? 'bg-navy-secondary font-medium' : '' }}
           ">Dosen</div>
+        </a>
+        <a href="{{ route('admin.matakuliah') }}">
+          <div class="hover:bg-navy-secondary hover:font-medium rounded px-1 py-2 pl-2
+          {{ (URL::current() == route('admin.matakuliah')) ? 'bg-navy-secondary font-medium' : '' }}
+          ">Mata Kuliah</div>
+        </a>
+        <a href="{{ route('admin.periode') }}">
+          <div class="hover:bg-navy-secondary hover:font-medium rounded px-1 py-2 pl-2
+          {{ (URL::current() == route('admin.periode')) ? 'bg-navy-secondary font-medium' : '' }}
+          ">Periode</div>
+        </a>
+        <a href="{{ route('admin.kelas') }}">
+          <div class="hover:bg-navy-secondary hover:font-medium rounded px-1 py-2 pl-2
+          {{ (URL::current() == route('admin.kelas')) ? 'bg-navy-secondary font-medium' : '' }}
+          ">Kelas</div>
         </a>
       </div>
     </div>

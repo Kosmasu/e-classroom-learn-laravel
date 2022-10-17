@@ -9,25 +9,27 @@
         <div>
           <h1 class="text-3xl font-bold text-center">Login</h1>
         </div>
-        <div class="flex flex-col mt-4">
-          <label class="w-full px-1 mt-2" for="username">Username</label>
-          <input class="w-full mt-1 rounded px-1 py-1 bg-gray-200" type="text" name="username" id="username"
-            placeholder="Username">
-          <label class="w-full px-1 mt-2" for="password">Password</label>
-          <input class="w-full mt-1 rounded px-2 py-1 bg-gray-200" type="password" name="password" id="password"
-            placeholder="Password">
-            <button class="w-full px-2 py-1 mt-4 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400">Login</button>
-            <a href="{{ route('dosen.home') }}">
-              <button class="w-full px-2 py-1 mt-4 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400">Home Dosen</button>
-            </a>
-            <a href="{{ route('mahasiswa.home') }}">
-              <button class="w-full px-2 py-1 mt-4 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400">Home Mahasiswa</button>
-            </a>
-            <a href="{{ route('admin.home') }}">
-              <button class="w-full px-2 py-1 mt-4 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400">Home Admin</button>
-            </a>
-          <span class="text-xs">Button sementara untuk keperluan navigasi</span>
-        </div>
+        <form action="{{ route('auth.doLogin') }}" method="POST">
+          @csrf
+          <div class="flex flex-col space-y-1">
+            <label class="w-full px-1" for="username">Username</label>
+            <input class="w-full mt-1 rounded px-1 py-1 bg-gray-200 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="text" name="username" id="username" placeholder="Username">
+            <label class="w-full px-1" for="password">Password</label>
+            <input class="w-full mt-1 rounded px-1 py-1 bg-gray-200 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="password" name="password" id="password" placeholder="Password">
+              @if (Session::has('response'))
+                @if (Session::get('response')["status"] == "failed")
+                  <div class="rounded bg-red-300 text-red-900 text-center text-lg px-2 py-1">
+                    {{ Session::get('response')["message"] }}
+                  </div>
+                @elseif (Session::get('response')["status"] == "success")
+                  <div class="rounded bg-green-300 text-green-900 text-center text-lg px-2 py-1">
+                    {{ Session::get('response')["message"] }}
+                  </div>
+                @endif
+              @endif
+            </div>
+          <input class="w-full px-2 py-1 mt-2 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400" type="submit" value="Login" name="submit">
+        </form>
         <div class="mt-1">
           <p class="text-xs">
             Belum punya akun? register
