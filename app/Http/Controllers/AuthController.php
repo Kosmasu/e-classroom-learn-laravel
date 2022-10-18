@@ -123,42 +123,42 @@ class AuthController extends Controller
       ]
     );
 
-    if ($request->submit) {
-      $isEmailUnique = true;
-      $isNomorTeleponUnique = true;
-      if (Session::has("listMahasiswa")) {
-        foreach (Session::get("listMahasiswa") as $mahasiswa) {
-          if ($request->email == $mahasiswa["email"]) $isEmailUnique = false;
-          if ($request->nomor_telepon == $mahasiswa["nomor_telepon"]) $isNomorTeleponUnique = false;
-        }
-      }
-      if (Session::has("listDosen")) {
-        foreach (Session::get("listDosen") as $dosen) {
-          if ($request->email == $dosen["email"]) $isEmailUnique = false;
-          if ($request->nomor_telepon == $dosen["nomor_telepon"]) $isNomorTeleponUnique = false;
-        }
-      }
-      if (
-        $request->nama_lengkap == "" ||
-        $request->nomor_telepon == "" ||
-        $request->tahun_angkatan == "" ||
-        $request->email == "" ||
-        $request->jurusan == "" ||
-        $request->tanggal_lahir == "" ||
-        $request->konfirmasi_syarat_dan_ketentuan == ""
-      ) {
-        $response["status"] = "failed";
-        $response["message"] = "Semua field harus terisi!";
-      }
-      else if (!$isEmailUnique) {
-        $response["status"] = "failed";
-        $response["message"] = "Email harus unik!";
-      }
-      else if (!$isNomorTeleponUnique) {
-        $response["status"] = "failed";
-        $response["message"] = "Nomor telepon harus unik!";
-      }
-      else {
+    // if ($request->submit) {
+    //   $isEmailUnique = true;
+    //   $isNomorTeleponUnique = true;
+    //   if (Session::has("listMahasiswa")) {
+    //     foreach (Session::get("listMahasiswa") as $mahasiswa) {
+    //       if ($request->email == $mahasiswa["email"]) $isEmailUnique = false;
+    //       if ($request->nomor_telepon == $mahasiswa["nomor_telepon"]) $isNomorTeleponUnique = false;
+    //     }
+    //   }
+    //   if (Session::has("listDosen")) {
+    //     foreach (Session::get("listDosen") as $dosen) {
+    //       if ($request->email == $dosen["email"]) $isEmailUnique = false;
+    //       if ($request->nomor_telepon == $dosen["nomor_telepon"]) $isNomorTeleponUnique = false;
+    //     }
+    //   }
+    //   if (
+    //     $request->nama_lengkap == "" ||
+    //     $request->nomor_telepon == "" ||
+    //     $request->tahun_angkatan == "" ||
+    //     $request->email == "" ||
+    //     $request->jurusan == "" ||
+    //     $request->tanggal_lahir == "" ||
+    //     $request->konfirmasi_syarat_dan_ketentuan == ""
+    //   ) {
+    //     $response["status"] = "failed";
+    //     $response["message"] = "Semua field harus terisi!";
+    //   }
+    //   else if (!$isEmailUnique) {
+    //     $response["status"] = "failed";
+    //     $response["message"] = "Email harus unik!";
+    //   }
+    //   else if (!$isNomorTeleponUnique) {
+    //     $response["status"] = "failed";
+    //     $response["message"] = "Nomor telepon harus unik!";
+    //   }
+    //   else {
         $nomorUrut = 1;
         $nrp = "";
 
@@ -195,8 +195,8 @@ class AuthController extends Controller
         $response["status"] = "success";
         $response["message"] = "Berhasil register";
         // $response["mahasiswa"] = $mahasiswa;
-      }
-    }
+      // }
+    // }
     return redirect()->route('auth.register.mahasiswa')->with("response", $response);
   }
 

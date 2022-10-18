@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\NomorTeleponUnik;
+use App\Rules\NoSpasi;
+use App\Rules\PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -19,6 +22,13 @@ class MahasiswaController extends Controller
   }
 
   public function gantiProfile(Request $request) {
+    $request->validate(
+      [
+        "password" => ["required", "min:6", "max:12", "confirmed", new NoSpasi],
+        "email" => ["required", "email"],
+        "nomor_telepon" => ["required", "digits_between:10,12", new NomorTeleponUnik],
+      ]
+    );
     $listMahasiswa = Session::get('listMahasiswa') ?? [];
     $currentUser = Session::get('currentUser') ?? null;
     if (!$currentUser) {
@@ -29,25 +39,25 @@ class MahasiswaController extends Controller
       'message' => 'Gagal!',
     ];
 
-    if ($request->submit) {
-      if (
-        $request->email == "" ||
-        $request->nomor_telepon == "" ||
-        $request->password == "" ||
-        $request->confirm_password == ""
-      ) {
-        $response = [
-          'status' => 'failed',
-          'message' => 'Isi semua field!'
-        ];
-      }
-      else if ($request->password != $request->confirm_password) {
-        $response = [
-          'status' => 'failed',
-          'message' => 'Password dan confirm password tidak sama!'
-        ];
-      }
-      else {
+    // if ($request->submit) {
+    //   if (
+    //     $request->email == "" ||
+    //     $request->nomor_telepon == "" ||
+    //     $request->password == "" ||
+    //     $request->confirm_password == ""
+    //   ) {
+    //     $response = [
+    //       'status' => 'failed',
+    //       'message' => 'Isi semua field!'
+    //     ];
+    //   }
+    //   else if ($request->password != $request->confirm_password) {
+    //     $response = [
+    //       'status' => 'failed',
+    //       'message' => 'Password dan confirm password tidak sama!'
+    //     ];
+    //   }
+    //   else {
         foreach ($listMahasiswa as $i => $value) {
           if ($value['nrp'] == $currentUser['nrp']) {
             $currentUser['email'] = $request->email;
@@ -62,8 +72,8 @@ class MahasiswaController extends Controller
           'status' => 'success',
           'message' => 'Berhasil edit profile!'
         ];
-      }
-    }
+      // }
+    // }
     return redirect()->route('mahasiswa.profile')->with('response', $response);
   }
 

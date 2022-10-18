@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\NomorTeleponUnik;
+use App\Rules\NoSpasi;
+use App\Rules\PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername;
+use App\Rules\UsernameDosenUnik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Monolog\Handler\PushoverHandler;
@@ -35,6 +39,16 @@ class DosenController extends Controller
   }
 
   public function gantiProfile(Request $request) {
+
+    $request->validate(
+      [
+        "username" => ["required", "alpha_dash", new UsernameDosenUnik, "min:5", "max:10"],
+        "password" => ["required", "min:6", "max:12", "confirmed", new NoSpasi, new PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername($request->username)],
+        "email" => ["required", "email"],
+        "nomor_telepon" => ["required", "digits_between:10,12", new NomorTeleponUnik],
+      ]
+    );
+
     $listDosen = Session::get('listDosen') ?? [];
     $currentUser = Session::get('currentUser') ?? null;
     if (!$currentUser) {
@@ -44,38 +58,38 @@ class DosenController extends Controller
       'status' => 'failed',
       'message' => 'Gagal!',
     ];
-    if ($request->submit) {
-      $isUsernameUnique = true;
-      foreach ($listDosen as $item) {
-        if ($item['username'] == $currentUser['username'] && $item != $currentUser) {
-          $isUsernameUnique = false; break;
-        }
-      }
-      if (
-        $request->username == "" ||
-        $request->email == "" ||
-        $request->nomor_telepon == "" ||
-        $request->password == "" ||
-        $request->confirm_password == ""
-      ) {
-        $response = [
-          'status' => 'failed',
-          'message' => 'Isi semua field!'
-        ];
-      }
-      else if ($request->password != $request->confirm_password) {
-        $response = [
-          'status' => 'failed',
-          'message' => 'Password dan confirm password tidak sama!'
-        ];
-      }
-      else if (!$isUsernameUnique) {
-        $response = [
-          'status' => 'failed',
-          'message' => 'Username tidak unique!'
-        ];
-      }
-      else {
+    // if ($request->submit) {
+    //   $isUsernameUnique = true;
+    //   foreach ($listDosen as $item) {
+    //     if ($item['username'] == $currentUser['username'] && $item != $currentUser) {
+    //       $isUsernameUnique = false; break;
+    //     }
+    //   }
+    //   if (
+    //     $request->username == "" ||
+    //     $request->email == "" ||
+    //     $request->nomor_telepon == "" ||
+    //     $request->password == "" ||
+    //     $request->confirm_password == ""
+    //   ) {
+    //     $response = [
+    //       'status' => 'failed',
+    //       'message' => 'Isi semua field!'
+    //     ];
+    //   }
+    //   else if ($request->password != $request->confirm_password) {
+    //     $response = [
+    //       'status' => 'failed',
+    //       'message' => 'Password dan confirm password tidak sama!'
+    //     ];
+    //   }
+    //   else if (!$isUsernameUnique) {
+    //     $response = [
+    //       'status' => 'failed',
+    //       'message' => 'Username tidak unique!'
+    //     ];
+    //   }
+    //   else {
         foreach ($listDosen as $i => $value) {
           if ($value['username'] == $currentUser['username']) {
             $currentUser['email'] = $request->email;
@@ -91,8 +105,8 @@ class DosenController extends Controller
           'status' => 'success',
           'message' => 'Berhasil edit profile!'
         ];
-      }
-    }
+    //   }
+    // }
     return redirect()->route('dosen.profile')->with('response', $response);
   }
 

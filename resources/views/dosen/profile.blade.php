@@ -67,6 +67,15 @@
           <input class="px-2 py-1 mt-2 bg-navy-primary rounded text-gray-100 font-medium hover:bg-navy-secondary" type="submit" value="Edit Profile" name="submit">
         </div>
       </form>
+      @if ($errors->any())
+      <div class="space-y-1 mt-1 text-gray-200">
+        @foreach ($errors->all() as $error)
+          <div class="p-2 bg-red-600 rounded">
+            {{ $error }}
+          </div>
+        @endforeach
+      </div>
+      @endif
     </div>
   </div>
 @endsection

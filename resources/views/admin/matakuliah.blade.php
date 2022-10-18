@@ -43,6 +43,15 @@
       </div>
     </div>
   </form>
+  @if ($errors->any())
+  <div class="space-y-1 mt-1 text-gray-200">
+    @foreach ($errors->all() as $error)
+      <div class="p-2 bg-red-600 rounded">
+        {{ $error }}
+      </div>
+    @endforeach
+  </div>
+  @endif
 </div>
 <div class="mt-4 flex-grow">
   <div class="w-full rounded lg:rounded-lg shadow lg:shadow-lg overflow-hidden border border-gray-900 mt-8">

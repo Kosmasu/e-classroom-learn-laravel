@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\DosenValid;
+use App\Rules\MataKuliahValid;
+use App\Rules\NamaMataKuliahUnik;
+use App\Rules\PeriodeValid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -31,16 +35,25 @@ class AdminController extends Controller
   public function doCreateMataKuliah(Request $request) {
     $response["status"] = "failed";
     $response["message"] = "";
-    if ($request->submit) {
-      if (
-        $request->nama_mata_kuliah == "" ||
-        $request->minimal_semester == "" ||
-        $request->jurusan == ""
-      ) {
-        $response["status"] = "failed";
-        $response["message"] = "Semua field harus terisi!";
-      }
-      else {
+
+    $request->validate(
+      [
+        "nama_mata_kuliah" => ["required", new NamaMataKuliahUnik],
+        "minimal_semester" => ["required", "integer", "min:1", "max:8"],
+        "jurusan" => ["required", ],
+      ]
+    );
+
+    // if ($request->submit) {
+    //   if (
+    //     $request->nama_mata_kuliah == "" ||
+    //     $request->minimal_semester == "" ||
+    //     $request->jurusan == ""
+    //   ) {
+    //     $response["status"] = "failed";
+    //     $response["message"] = "Semua field harus terisi!";
+    //   }
+    //   else {
         $response["status"] = "success";
         $response["message"] = "Berhasil tambah mata kuliah!";
         $jurusan = null;
@@ -57,8 +70,8 @@ class AdminController extends Controller
           "jurusan_id" => $jurusan["id"],
         ];
         Session::push('listMataKuliah', $matakuliah);
-      }
-    }
+    //   }
+    // }
     return redirect()->route('admin.matakuliah')->with("response", $response);
   }
 
@@ -122,28 +135,40 @@ class AdminController extends Controller
   public function doCreateKelas(Request $request) {
     $response["status"] = "failed";
     $response["message"] = "";
-    if ($request->submit) {
-      if (
-        $request->mata_kuliah == "" ||
-        $request->jadwal == "" ||
-        $request->periode == "" ||
-        $request->dosen_pengajar == ""
-      ) {
-        $response["status"] = "failed";
-        $response["message"] = "Semua field harus terisi!";
-      }
-      else {
+
+    $request->validate(
+      [
+        "mata_kuliah" => ["required", new MataKuliahValid],
+        "jadwal_jam" => ["required", ],
+        "jadwal_hari" => ["required", ],
+        "periode" => ["required", new PeriodeValid],
+        "dosen_pengajar" => ["required", new DosenValid],
+        "sks" => ["required", "integer", "min:2"],
+      ]
+    );
+
+    // if ($request->submit) {
+    //   if (
+    //     $request->mata_kuliah == "" ||
+    //     $request->jadwal == "" ||
+    //     $request->periode == "" ||
+    //     $request->dosen_pengajar == ""
+    //   ) {
+    //     $response["status"] = "failed";
+    //     $response["message"] = "Semua field harus terisi!";
+    //   }
+    //   else {
         $response["status"] = "success";
         $response["message"] = "Berhasil tambah kelas!";
         $kelas = [
           "mata_kuliah" => $request->mata_kuliah,
-          "jadwal" => $request->jadwal,
+          "jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
           "periode" => $request->periode,
           "dosen" => $request->dosen_pengajar,
         ];
         Session::push('listKelas', $kelas);
-      }
-    }
+    //   }
+    // }
     return redirect()->route('admin.kelas')->with("response", $response);
   }
 }

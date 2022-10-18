@@ -21,12 +21,22 @@
       </div>
       <div class="flex flex-col">
         <label class="w-full px-1" for="jadwal">Jadwal Kelas</label>
-        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="datetime-local" name="jadwal" id="jadwal" placeholder="Jadwal Kelas">
+        <div class="w-full space-x-1 flex">
+          <input class="w-1/2  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="time" name="jadwal_jam" id="jadwal_jam" placeholder="Jadwal Kelas">
+          <select class="w-1/2 mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="jadwal_hari" id="jadwal_hari">
+            <option selected disabled>Hari</option>
+            <option value="Senin">Senin</option>
+            <option value="Selasa">Selasa</option>
+            <option value="Rabu">Rabu</option>
+            <option value="Kamis">Kamis</option>
+            <option value="Jumat">Jumat</option>
+          </select>
+        </div>
       </div>
       <div>
         <label class="w-full px-1" for="periode">Periode</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="periode" id="periode">
-          <option selected disabled>Jurusan</option>
+          <option selected disabled>Periode</option>
           @foreach (Session::get("listPeriode") ?? [] as $item)
             <option value="{{ $item["id"] }}">{{ $item["tahun_awal"] . '/' . $item["tahun_akhir"] }}</option>
           @endforeach
@@ -35,11 +45,15 @@
       <div>
         <label class="w-full px-1" for="dosen_pengajar">Dosen Pengajar</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="dosen_pengajar" id="dosen_pengajar">
-          <option selected disabled>Jurusan</option>
+          <option selected disabled>Dosen</option>
           @foreach (Session::get("listDosen") ?? [] as $item)
             <option value="{{ $item["username"] }}">{{ $item["nama_lengkap"] }}</option>
           @endforeach
         </select>
+      </div>
+      <div>
+        <label class="w-full px-1" for="sks">SKS</label>
+        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="number" name="sks" id="sks" placeholder="SKS">
       </div>
       @if (Session::has('response'))
         @if (Session::get('response')["status"] == "failed")
@@ -57,6 +71,15 @@
       </div>
     </div>
   </form>
+  @if ($errors->any())
+  <div class="space-y-1 mt-1 text-gray-100">
+    @foreach ($errors->all() as $error)
+      <div class="p-2 bg-red-600 rounded">
+        {{ $error }}
+      </div>
+    @endforeach
+  </div>
+  @endif
 </div>
 <div class="mt-4 flex-grow">
   <div class="w-full rounded lg:rounded-lg shadow lg:shadow-lg overflow-hidden border border-gray-900 mt-8">
