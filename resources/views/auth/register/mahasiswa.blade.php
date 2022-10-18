@@ -26,7 +26,7 @@
             </div>
             <div>
               <label class="w-full px-1" for="email">Email</label>
-              <input class="w-full mt-1 rounded px-1 py-1 bg-gray-200 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="email" name="email" id="email" placeholder="Email">
+              <input class="w-full mt-1 rounded px-1 py-1 bg-gray-200 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="text" name="email" id="email" placeholder="Email">
             </div>
             <div>
               <label class="w-full px-1" for="jurusan">Jurusan</label>
@@ -59,6 +59,15 @@
             @endif
           <input class="w-full px-2 py-1 mt-2 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400" type="submit" value="Register" name="submit">
         </form>
+        @if ($errors->any())
+        <div class="space-y-1 mt-1">
+          @foreach ($errors->all() as $error)
+            <div class="p-2 bg-red-600 rounded">
+              {{ $error }}
+            </div>
+          @endforeach
+        </div>
+        @endif
         <div class="mt-1">
           <p class="text-xs">
             Sudah punya akun? login

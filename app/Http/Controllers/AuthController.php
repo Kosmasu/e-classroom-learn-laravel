@@ -2,6 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\LoginTerdaftar;
+use App\Rules\MinVowel;
+use App\Rules\MinWord;
+use App\Rules\NomorTeleponUnik;
+use App\Rules\NoSpasi;
+use App\Rules\PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername;
+use App\Rules\UsernameDosenUnik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -16,6 +23,14 @@ class AuthController extends Controller
       "status"=>"failed",
       "message"=>""
     ];
+
+    $request->validate(
+      [
+        "username" => ["required", new LoginTerdaftar($request)],
+        "password" => ["required"],
+      ]
+    );
+
     if ($request->submit) {
       $dosen = null;
       $mahasiswa = null;
@@ -34,18 +49,18 @@ class AuthController extends Controller
           }
         }
       }
-      if (
-        $request->username == "" ||
-        $request->password == ""
-      ) {
-        $response["status"] = "failed";
-        $response["message"] = "Semua field harus terisi!";
-      }
-      else if (!$admin && !$dosen && !$mahasiswa) {
-        $response["status"] = "failed";
-        $response["message"] = "Username/password salah!";
-      }
-      else {
+      // if (
+      //   $request->username == "" ||
+      //   $request->password == ""
+      // ) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Semua field harus terisi!";
+      // }
+      // else if (!$admin && !$dosen && !$mahasiswa) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Username/password salah!";
+      // }
+      // else {
         $response["status"] = "success";
         $response["message"] = "Berhasil Login";
         if ($request->username == "admin" && $request->password == "admin") {
@@ -56,11 +71,11 @@ class AuthController extends Controller
           Session::put('currentUser', $dosen);
           return redirect()->route('dosen.home');
         }
-        else if ($mahasiswa) {
+        else { //mahasiswa
           Session::put('currentUser', $mahasiswa);
           return redirect()->route('mahasiswa.home');
         }
-      }
+      // }
     }
     return redirect()->route('auth.login')->with("response", $response);
   }
@@ -81,6 +96,33 @@ class AuthController extends Controller
       "status"=>"failed",
       "message"=>""
     ];
+
+    // $request->validate(
+    //   [
+    //     "username" => ["required", "min:5", "max:10", new UsernameDosenUnik, "alpha_dash"],
+    //     "password" => ["required", "min:6", "max:12", "confirmed", new NoSpasi, new PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername($request->username)],
+    //     "tahun_kelulusan" => ["required", "after_or_equal:1990/01/01", "before:today"],
+    //     "jurusan_kelulusan" => ["required"],
+    //     "nama_lengkap" => ["required"],
+    //     "tanggal_lahir" => ["required", "before:21 years ago"],
+    //     "email" => ["required", "email"],
+    //     "nomor_telepon" => ["required", "digits_between:10,12", new NomorTeleponUnik],
+    //     "konfirmasi_syarat_dan_ketentuan" => ["required"],
+    //   ]
+    // );
+
+    $request->validate(
+      [
+        "nama_lengkap" => ["required", new MinWord(2), new MinVowel(3)],
+        "nomor_telepon" => ["required", "digits_between:10,12", new NomorTeleponUnik],
+        "tahun_angkatan" => ["required",],
+        "email" => ["required", "email"],
+        "jurusan" => ["required",],
+        "tanggal_lahir" => ["required","before:17 years ago"],
+        "konfirmasi_syarat_dan_ketentuan" => ["required",],
+      ]
+    );
+
     if ($request->submit) {
       $isEmailUnique = true;
       $isNomorTeleponUnique = true;
@@ -120,14 +162,14 @@ class AuthController extends Controller
         $nomorUrut = 1;
         $nrp = "";
 
-        //php nda jelas, harus dipisah nda bisa inline current(explode())
-        $tahunLahir = explode("-", $request->tanggal_lahir);
-        $tahunLahir = current($tahunLahir);
+        //php nda jelas, harus dipisah, nda bisa inline current(explode())
+        $tahunAngkatan = explode("-", $request->tahun_angkatan);
+        $tahunAngkatan = current($tahunAngkatan);
 
-        $tahunNrp = substr($tahunLahir, 0, 1) . substr($tahunLahir, 2, 2);
+        $tahunNrp = substr($tahunAngkatan, 0, 1) . substr($tahunAngkatan, 2, 2);
 
         $password = explode(" ",$request->nama_lengkap);
-        $password = end($password) . substr($tahunLahir, 0, 2);
+        $password = end($password) . substr($tahunAngkatan, 0, 2);
 
         if (Session::has('listMahasiswa')) {
           foreach (Session::get('listMahasiswa') as $mahasiswa) {
@@ -169,59 +211,74 @@ class AuthController extends Controller
       "status"=>"failed",
       "message"=>""
     ];
-    if ($request->submit) {
-      $isEmailUnique = true;
-      $isNomorTeleponUnique = true;
-      $isUsernameUnique = true;
-      if (Session::has("listMahasiswa")) {
-        foreach (Session::get("listMahasiswa") as $mahasiswa) {
-          if ($request->email == $mahasiswa["email"]) $isEmailUnique = false;
-          if ($request->nomor_telepon == $mahasiswa["nomor_telepon"]) $isNomorTeleponUnique = false;
-        }
-      }
-      if (Session::has("listDosen")) {
-        foreach (Session::get("listDosen") as $dosen) {
-          if ($request->email == $dosen["email"]) $isEmailUnique = false;
-          if ($request->nomor_telepon == $dosen["nomor_telepon"]) $isNomorTeleponUnique = false;
-          if ($request->username == $dosen["username"]) $isUsernameUnique = false;
-        }
-      }
-      if (
-        $request->username == "" ||
-        $request->password == "" ||
-        $request->confirm_password == "" ||
-        $request->tahun_kelulusan == "" ||
-        $request->jurusan_kelulusan == "" ||
-        $request->nama_lengkap == "" ||
-        $request->tanggal_lahir == "" ||
-        $request->email == "" ||
-        $request->nomor_telepon == "" ||
-        $request->konfirmasi_syarat_dan_ketentuan == ""
-      ) {
-        $response["status"] = "failed";
-        $response["message"] = "Semua field harus terisi!";
-      }
-      else if (!$isEmailUnique) {
-        $response["status"] = "failed";
-        $response["message"] = "Email harus unik!";
-      }
-      else if (!$isNomorTeleponUnique) {
-        $response["status"] = "failed";
-        $response["message"] = "Nomor telepon harus unik!";
-      }
-      else if (!$isUsernameUnique) {
-        $response["status"] = "failed";
-        $response["message"] = "Username harus unik!";
-      }
-      else if ($request->username == "admin") {
-        $response["status"] = "failed";
-        $response["message"] = "Username tidak boleh admin!";
-      }
-      else if ($request->password != $request->confirm_password) {
-        $response["status"] = "failed";
-        $response["message"] = "Password dan confirm password harus sama!";
-      }
-      else {
+
+    $request->validate(
+      [
+        "username" => ["required", "min:5", "max:10", new UsernameDosenUnik, "alpha_dash"],
+        "password" => ["required", "min:6", "max:12", "confirmed", new NoSpasi, new PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername($request->username)],
+        "tahun_kelulusan" => ["required", "after_or_equal:1990/01/01", "before:today"],
+        "jurusan_kelulusan" => ["required"],
+        "nama_lengkap" => ["required"],
+        "tanggal_lahir" => ["required", "before:21 years ago"],
+        "email" => ["required", "email"],
+        "nomor_telepon" => ["required", "digits_between:10,12", new NomorTeleponUnik],
+        "konfirmasi_syarat_dan_ketentuan" => ["required"],
+      ]
+    );
+
+    // if ($request->submit) {
+      // $isEmailUnique = true;
+      // $isNomorTeleponUnique = true;
+      // $isUsernameUnique = true;
+      // if (Session::has("listMahasiswa")) {
+      //   foreach (Session::get("listMahasiswa") as $mahasiswa) {
+      //     if ($request->email == $mahasiswa["email"]) $isEmailUnique = false;
+      //     if ($request->nomor_telepon == $mahasiswa["nomor_telepon"]) $isNomorTeleponUnique = false;
+      //   }
+      // }
+      // if (Session::has("listDosen")) {
+      //   foreach (Session::get("listDosen") as $dosen) {
+      //     if ($request->email == $dosen["email"]) $isEmailUnique = false;
+      //     if ($request->nomor_telepon == $dosen["nomor_telepon"]) $isNomorTeleponUnique = false;
+      //     if ($request->username == $dosen["username"]) $isUsernameUnique = false;
+      //   }
+      // }
+      // if (
+      //   $request->username == "" ||
+      //   $request->password == "" ||
+      //   $request->confirm_password == "" ||
+      //   $request->tahun_kelulusan == "" ||
+      //   $request->jurusan_kelulusan == "" ||
+      //   $request->nama_lengkap == "" ||
+      //   $request->tanggal_lahir == "" ||
+      //   $request->email == "" ||
+      //   $request->nomor_telepon == "" ||
+      //   $request->konfirmasi_syarat_dan_ketentuan == ""
+      // ) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Semua field harus terisi!";
+      // }
+      // else if (!$isEmailUnique) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Email harus unik!";
+      // }
+      // else if (!$isNomorTeleponUnique) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Nomor telepon harus unik!";
+      // }
+      // else if (!$isUsernameUnique) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Username harus unik!";
+      // }
+      // else if ($request->username == "admin") {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Username tidak boleh admin!";
+      // }
+      // else if ($request->password != $request->confirm_password) {
+      //   $response["status"] = "failed";
+      //   $response["message"] = "Password dan confirm password harus sama!";
+      // }
+      // else {
         $dosen = [
           "username" => $request->username,
           "password" => $request->password,
@@ -235,8 +292,8 @@ class AuthController extends Controller
         Session::push("listDosen", $dosen);
         $response["status"] = "success";
         $response["message"] = "Berhasil register";
-      }
-    }
+      // }
+    // }
     return redirect()->route('auth.register.dosen')->with("response", $response);
   }
 }

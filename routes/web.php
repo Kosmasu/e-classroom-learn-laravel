@@ -35,7 +35,7 @@ Route::get('/addSession', function () {
     "nrp" => "220001",
     "password" => "a",
     "nama_lengkap" => "Kenny Kenny",
-    "nomor_telepon" => "0819312341234",
+    "nomor_telepon" => "000000000001",
     "tahun_angkatan" => "2020",
     "email" => "kenny@gmail.com",
     "jurusan" => "INF",
@@ -49,7 +49,7 @@ Route::get('/addSession', function () {
     "nama_lengkap" => 'Mikhael Setiawan',
     "tanggal_lahir" => '2022-01-01',
     "email" => 'mimi@gmail.com',
-    "nomor_telepon" => '01238941263479123',
+    "nomor_telepon" => '000000000002',
   ]);
 });
 /*
@@ -66,7 +66,7 @@ Route::get('/addSession', function () {
 */
 
 Route::get('/login', [AuthController::class, 'pageLogin'])->name('auth.login'); //login
-Route::post('/doLogin', [AuthController::class, 'login'])->name('auth.doLogin'); //login
+Route::post('/do-login', [AuthController::class, 'login'])->name('auth.doLogin'); //login
 
 Route::get('/', function () {
   return redirect('/login'); //redirect

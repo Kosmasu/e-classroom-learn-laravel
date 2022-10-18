@@ -30,6 +30,15 @@
             </div>
           <input class="w-full px-2 py-1 mt-2 bg-gray-200 rounded text-gray-900 font-medium hover:bg-gray-300 active:bg-gray-400" type="submit" value="Login" name="submit">
         </form>
+        @if ($errors->any())
+        <div class="space-y-1 mt-1">
+          @foreach ($errors->all() as $error)
+            <div class="p-2 bg-red-600 rounded">
+              {{ $error }}
+            </div>
+          @endforeach
+        </div>
+        @endif
         <div class="mt-1">
           <p class="text-xs">
             Belum punya akun? register
