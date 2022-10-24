@@ -22,7 +22,6 @@
       <div class="flex flex-col">
         <label class="w-full px-1" for="jadwal">Jadwal Kelas</label>
         <div class="w-full space-x-1 flex">
-          <input class="w-1/2  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="time" name="jadwal_jam" id="jadwal_jam" placeholder="Jadwal Kelas">
           <select class="w-1/2 mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="jadwal_hari" id="jadwal_hari">
             <option selected disabled>Hari</option>
             <option value="Senin">Senin</option>
@@ -31,6 +30,7 @@
             <option value="Kamis">Kamis</option>
             <option value="Jumat">Jumat</option>
           </select>
+          <input class="w-1/2  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="time" name="jadwal_jam" id="jadwal_jam" placeholder="Jadwal Kelas">
         </div>
       </div>
       <div>
@@ -50,10 +50,6 @@
             <option value="{{ $item["username"] }}">{{ $item["nama_lengkap"] }}</option>
           @endforeach
         </select>
-      </div>
-      <div>
-        <label class="w-full px-1" for="sks">SKS</label>
-        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="number" name="sks" id="sks" placeholder="SKS">
       </div>
       @if (Session::has('response'))
         @if (Session::get('response')["status"] == "failed")
@@ -120,9 +116,9 @@
             <td class="px-2 py-1 text-center">{{ $periode }}</td>
             <td class="px-2 py-1 text-center">{{ $dosen }}</td>
             <td class="text-center">
-              <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+              <form action="{{ route('admin.editKelas', ['id' => $item['id']]) }}" method="GET">
+                <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Edit">
+              </form>
             </td>
           </tr>
         @empty

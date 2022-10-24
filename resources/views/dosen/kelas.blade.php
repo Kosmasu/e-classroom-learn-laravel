@@ -52,9 +52,9 @@
               <td class="px-2 py-1 text-center">{{ $item["periode"] }}</td>
               <td class="px-2 py-1 text-center">{{ $item["dosen"] }}</td>
               <td class="text-center">
-                <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <form action="{{ route('dosen.kelas.detail', ['id' => $item['id']]) }}" method="GET">
+                  <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Detail">
+                </form>
               </td>
             </tr>
           @empty

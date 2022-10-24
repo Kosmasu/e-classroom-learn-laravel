@@ -86,9 +86,10 @@
             <td class="px-2 py-1 text-center">{{ $mataKuliah["minimal_semester"] }}</td>
             <td class="px-2 py-1">{{ $jurusan["nama"] }}</td>
             <td class="text-center">
-              <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+              <form action="{{ route('admin.editMataKuliah', ['id' => $mataKuliah['kode']]) }}" method="GET">
+                <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Edit">
+                <input type="hidden" name="id" value="{{ $mataKuliah["kode"] }}">
+              </form>
             </td>
           </tr>
         @empty

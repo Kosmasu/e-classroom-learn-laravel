@@ -52,6 +52,29 @@ Route::get('/addSession', function () {
     "nomor_telepon" => '000000000002',
   ]);
 });
+
+Route::get('/coba-session', function() {
+  Session::push('listMahasiswa', [
+    "nrp" => "220002",
+    "password" => "a",
+    "nama_lengkap" => "Mahasiswa 2",
+    "nomor_telepon" => "000000000001",
+    "tahun_angkatan" => "2020",
+    "email" => "kenny@gmail.com",
+    "jurusan" => "INF",
+    "tanggal_lahir" => "2022-01-01",
+  ]);
+  Session::push('listMahasiswa', [
+    "nrp" => "220003",
+    "password" => "a",
+    "nama_lengkap" => "Mahasiswa 3",
+    "nomor_telepon" => "000000000001",
+    "tahun_angkatan" => "2020",
+    "email" => "kenny@gmail.com",
+    "jurusan" => "INF",
+    "tanggal_lahir" => "2022-01-01",
+  ]);
+});
 /*
 -	Halaman Login (/login)
 -	Halaman Register dosen (/register/dosen)
@@ -65,45 +88,64 @@ Route::get('/addSession', function () {
 -	Halaman Profile untuk mahasiswa (/mahasiswa/profile)
 */
 
-Route::get('/login', [AuthController::class, 'pageLogin'])->name('auth.login'); //login
-Route::post('/do-login', [AuthController::class, 'login'])->name('auth.doLogin'); //login
+Route::get('/login', [AuthController::class, 'pageLogin'])->name('auth.login');
+Route::post('/do-login', [AuthController::class, 'login'])->name('auth.doLogin');
+Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 Route::get('/', function () {
-  return redirect('/login'); //redirect
+  return redirect('/login');
 });
 
 Route::prefix('/register')->group(function () {
-  Route::get('/', [AuthController::class, 'pageRegisterMahasiswa'])->name('auth.register.mahasiswa') ; //page register mahasiswa
-  Route::post('/do-mahasiswa', [AuthController::class, 'registerMahasiswa'])->name('auth.register.doMahasiswa') ; //register mahasiswa
-  Route::get('/dosen', [AuthController::class, 'pageRegisterDosen'])->name('auth.register.dosen'); //page register dosen
-  Route::post('/do-dosen', [AuthController::class, 'registerDosen'])->name('auth.register.doDosen'); //register dosen
+  Route::get('/', [AuthController::class, 'pageRegisterMahasiswa'])->name('auth.register.mahasiswa') ;
+  Route::post('/do-mahasiswa', [AuthController::class, 'registerMahasiswa'])->name('auth.register.doMahasiswa') ;
+  Route::get('/dosen', [AuthController::class, 'pageRegisterDosen'])->name('auth.register.dosen');
+  Route::post('/do-dosen', [AuthController::class, 'registerDosen'])->name('auth.register.doDosen');
 });
 
 Route::prefix('/admin')->group(function () {
-  Route::get('/',[AdminController::class, 'pageHome'])->name('admin.home'); //page home admin
-  Route::get('/dosen', [AdminController::class, 'pageDosen'])->name('admin.dosen'); //page list dosen
-  Route::get('/mahasiswa', [AdminController::class, 'pageMahasiswa'])->name('admin.mahasiswa'); //page list mahasiswa
-  Route::get('/mata-kuliah', [AdminController::class, 'pageMataKuliah'])->name('admin.matakuliah'); //page mata kuliah
-  Route::post('/do-create-mata-kuliah', [AdminController::class, 'doCreateMataKuliah'])->name('admin.doCreateMataKuliah'); //create mata kuliah
-  Route::get('/periode', [AdminController::class, 'pagePeriode'])->name('admin.periode'); //page periode
-  Route::post('/do-create-periode', [AdminController::class, 'doCreatePeriode'])->name('admin.doCreatePeriode'); //create mata kuliah
-  Route::get('/do-set-periode', [AdminController::class, 'doSetPeriode'])->name('admin.doSetPeriode'); //create mata kuliah
-  Route::get('/kelas', [AdminController::class, 'pageKelas'])->name('admin.kelas'); //page kelas
-  Route::post('/do-create-kelas', [AdminController::class, 'doCreateKelas'])->name('admin.doCreateKelas'); //create kelas
+  Route::get('/',[AdminController::class, 'pageHome'])->name('admin.home');
+  Route::get('/dosen', [AdminController::class, 'pageDosen'])->name('admin.dosen');
+  Route::get('/mahasiswa', [AdminController::class, 'pageMahasiswa'])->name('admin.mahasiswa');
+  Route::get('/mata-kuliah', [AdminController::class, 'pageMataKuliah'])->name('admin.matakuliah');
+  Route::post('/do-create-mata-kuliah', [AdminController::class, 'doCreateMataKuliah'])->name('admin.doCreateMataKuliah');
+  Route::get('/edit-mata-kuliah/{id}', [AdminController::class, 'pageEditMataKuliah'])->name('admin.editMataKuliah');
+  Route::post('/do-edit-mata-kuliah', [AdminController::class, 'doEditMataKuliah'])->name('admin.doEditMataKuliah');
+  Route::get('/periode', [AdminController::class, 'pagePeriode'])->name('admin.periode');
+  Route::post('/do-create-periode', [AdminController::class, 'doCreatePeriode'])->name('admin.doCreatePeriode');
+  Route::get('/do-set-periode', [AdminController::class, 'doSetPeriode'])->name('admin.doSetPeriode');
+  Route::get('/kelas', [AdminController::class, 'pageKelas'])->name('admin.kelas');
+  Route::post('/do-create-kelas', [AdminController::class, 'doCreateKelas'])->name('admin.doCreateKelas');
+  Route::get('/edit-kelas/{id}', [AdminController::class, 'pageEditKelas'])->name('admin.editKelas');
+  Route::post('/do-edit-kelas', [AdminController::class, 'doEditKelas'])->name('admin.doEditKelas');
 });
 
 Route::prefix('/dosen')->group(function () {
-  Route::get('/', [DosenController::class, 'pageHome'])->name('dosen.home'); //page home dosen
-  Route::get('/profile', [DosenController::class, 'pageProfile'])->name('dosen.profile'); //page profile dosen
-  Route::post('/gantiProfile', [DosenController::class, 'gantiProfile'])->name('dosen.gantiProfile'); //page profile mahasiswa
-  Route::get('/kelas/{kode_periode?}', [DosenController::class, 'pageKelas'])->name('dosen.kelas'); //page kelas dosen
-  Route::get('/ganti-periode', [DosenController::class, 'gantiPeriodeKelas'])->name('dosen.gantiPeriode'); //ganti periode kelas
+  Route::get('/', [DosenController::class, 'pageHome'])->name('dosen.home');
+  Route::get('/profile', [DosenController::class, 'pageProfile'])->name('dosen.profile');
+  Route::post('/gantiProfile', [DosenController::class, 'gantiProfile'])->name('dosen.gantiProfile');
+  Route::prefix('/kelas')->group(function () {
+    Route::get('/{kode_periode?}', [DosenController::class, 'pageKelas'])->name('dosen.kelas');
+    Route::get('/detail/{id}', [DosenController::class, 'pageKelasDetail'])->name('dosen.kelas.detail');
+    Route::get('/detail/{id}/absensi', [DosenController::class, 'pageKelasAbsensi'])->name('dosen.kelas.absensi');
+    Route::post('/detail/{id}/do-create-absensi', [DosenController::class, 'doCreateAbsensi'])->name('dosen.kelas.doCreateAbsensi');
+    Route::get('/detail/{id}/mahasiswa', [DosenController::class, 'pageKelasMahasiswa'])->name('dosen.kelas.mahasiswa');
+  });
+  Route::get('/ganti-periode', [DosenController::class, 'gantiPeriodeKelas'])->name('dosen.gantiPeriode');
 });
 
 Route::prefix('/mahasiswa')->group(function () {
-  Route::get('/', [MahasiswaController::class, 'pageHome'])->name('mahasiswa.home'); //page home mahasiswa
-  Route::get('/profile', [MahasiswaController::class, 'pageProfile'])->name('mahasiswa.profile'); //page profile mahasiswa
-  Route::post('/gantiProfile', [MahasiswaController::class, 'gantiProfile'])->name('mahasiswa.gantiProfile'); //page profile mahasiswa
-  Route::get('/kelas/{kode_periode?}', [MahasiswaController::class, 'pageKelas'])->name('mahasiswa.kelas'); //page kelas mahasiswa
-  Route::get('/ganti-periode', [MahasiswaController::class, 'gantiPeriodeKelas'])->name('mahasiswa.gantiPeriode'); //ganti periode kelas
+  Route::get('/', [MahasiswaController::class, 'pageHome'])->name('mahasiswa.home');
+  Route::get('/profile', [MahasiswaController::class, 'pageProfile'])->name('mahasiswa.profile');
+  Route::post('/gantiProfile', [MahasiswaController::class, 'gantiProfile'])->name('mahasiswa.gantiProfile');
+  Route::get('/kelas/{kode_periode?}', [MahasiswaController::class, 'pageKelas'])->name('mahasiswa.kelas');
+
+  Route::prefix('/my-kelas')->group(function() {
+    Route::get('/', [MahasiswaController::class, 'pageMyKelas'])->name('mahasiswa.myKelas');
+    Route::get('/{id}', [MahasiswaController::class, 'pageMyKelasDetail'])->name('mahasiswa.myKelas.detail');
+    Route::get('/{id}/absensi', [MahasiswaController::class, 'pageMyKelasAbsensi'])->name('mahasiswa.myKelas.absensi');
+  });
+  Route::get('/join-kelas', [MahasiswaController::class, 'pageJoinKelas'])->name('mahasiswa.joinKelas');
+  Route::post('/do-join-kelas', [MahasiswaController::class, 'doJoinKelas'])->name('mahasiswa.doJoinKelas');
+  Route::get('/ganti-periode', [MahasiswaController::class, 'gantiPeriodeKelas'])->name('mahasiswa.gantiPeriode');
 });

@@ -5,7 +5,7 @@
       <h1 class="pl-2 font-medium text-2xl">E-Classroom</h1>
     </div>
     <div>
-      <a href="{{ route('auth.login') }}">
+      <a href="{{ route('auth.logout') }}">
         <div class="hover:bg-red-600 hover:font-semibold font-medium text-lg rounded px-1 py-2 pl-2
         "><i class="fa-solid fa-right-from-bracket pr-1"></i> Logout</div>
       </a>

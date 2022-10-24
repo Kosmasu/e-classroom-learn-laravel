@@ -20,7 +20,7 @@
           <div class="flex flex-col font-semibold">
             <a class="px-3 py-2 hover:bg-navy-secondary" href="{{ route('mahasiswa.home') }}">Home</a>
             <a class="px-3 py-2 hover:bg-navy-secondary" href="{{ route('mahasiswa.profile') }}">Profile</a>
-            <a class="px-3 py-2 hover:bg-navy-secondary" href="{{ route('auth.login') }}">Logout</a>
+            <a class="px-3 py-2 hover:bg-navy-secondary" href="{{ route('auth.logout') }}">Logout</a>
           </div>
         </div>
       </div>

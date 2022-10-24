@@ -11,19 +11,39 @@ use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
+  private function checkLoggedInUser() {
+    $user = Session::get('currentUser');
+    if ($user == null || $user['role'] == "dosen" || $user['role'] == "mahasiswa") {
+      return redirect()->route('auth.login');
+    }
+    return false;
+  }
+
   public function pageHome() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     return view('admin.home');
   }
 
   public function pageDosen() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     return view('admin.dosen');
   }
 
   public function pageMahasiswa() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     return view('admin.mahasiswa');
   }
 
   public function pageMataKuliah() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     if (!Session::has('listJurusan')) {
       Session::push('listJurusan', ['id'=>'INF', 'nama'=>'S1-Informatika']);
       Session::push('listJurusan', ['id'=>'SIB', 'nama'=>'S1-Sistem Informasi Bisnis']);
@@ -43,39 +63,81 @@ class AdminController extends Controller
         "jurusan" => ["required", ],
       ]
     );
+    $response["status"] = "success";
+    $response["message"] = "Berhasil tambah mata kuliah!";
+    $jurusan = null;
+    foreach (Session::get('listJurusan') ?? [] as $item) {
+      if ($request->jurusan == $item["id"]) {
+        $jurusan = $item;
+        break;
+      }
+    }
+    $matakuliah = [
+      "kode" => substr($jurusan["id"], 0, 3) . substr($request->nama_mata_kuliah, 0, 2),
+      "nama" => $request->nama_mata_kuliah,
+      "minimal_semester" => $request->minimal_semester,
+      "jurusan_id" => $jurusan["id"],
+      "sks" => $request->sks,
+    ];
+    Session::push('listMataKuliah', $matakuliah);
+    return redirect()->route('admin.matakuliah')->with("response", $response);
+  }
 
-    // if ($request->submit) {
-    //   if (
-    //     $request->nama_mata_kuliah == "" ||
-    //     $request->minimal_semester == "" ||
-    //     $request->jurusan == ""
-    //   ) {
-    //     $response["status"] = "failed";
-    //     $response["message"] = "Semua field harus terisi!";
-    //   }
-    //   else {
-        $response["status"] = "success";
-        $response["message"] = "Berhasil tambah mata kuliah!";
-        $jurusan = null;
-        foreach (Session::get('listJurusan') ?? [] as $item) {
-          if ($request->jurusan == $item["id"]) {
-            $jurusan = $item;
-            break;
-          }
-        }
-        $matakuliah = [
-          "kode" => substr($jurusan["id"], 0, 3) . substr($request->nama_mata_kuliah, 0, 2),
-          "nama" => $request->nama_mata_kuliah,
-          "minimal_semester" => $request->minimal_semester,
-          "jurusan_id" => $jurusan["id"],
-        ];
-        Session::push('listMataKuliah', $matakuliah);
-    //   }
-    // }
+  public function pageEditMataKuliah($id) {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
+    if (!Session::has('listJurusan')) {
+      Session::push('listJurusan', ['id'=>'INF', 'nama'=>'S1-Informatika']);
+      Session::push('listJurusan', ['id'=>'SIB', 'nama'=>'S1-Sistem Informasi Bisnis']);
+      Session::push('listJurusan', ['id'=>'DKV', 'nama'=>'S1-Desain Komunikasi Visual']);
+    }
+    $mataKuliah = null;
+    $listMataKuliah = Session::get('listMataKuliah') ?? [];
+    foreach ($listMataKuliah as $key => $value) {
+      if ($value["kode"] == $id) {
+        $mataKuliah = $value;
+      }
+    }
+    if ($mataKuliah == null) {
+      return redirect()->route('admin.matakuliah');
+    }
+    return view('admin.editMatakuliah', compact('mataKuliah'));
+  }
+
+  public function doEditMataKuliah(Request $request) {
+    $response["status"] = "failed";
+    $response["message"] = "";
+
+    $request->validate(
+      [
+        "nama_mata_kuliah" => ["required", new NamaMataKuliahUnik],
+        "minimal_semester" => ["required", "integer", "min:1", "max:8"],
+        "sks" => ["required", "integer", "min:2"],
+      ]
+    );
+    $response["status"] = "success";
+    $response["message"] = "Berhasil edit mata kuliah!";
+    $listMataKuliah = Session::get('listMataKuliah') ?? [];
+    $mataKuliah = null;
+    foreach ($listMataKuliah as $key => $value) {
+      if ($value["kode"] == $request->id) {
+        $listMataKuliah[$key]["nama"] = $request->nama_mata_kuliah;
+        $listMataKuliah[$key]["minimal_semester"] = $request->minimal_semester;
+        $listMataKuliah[$key]["sks"] = $request->sks;
+        $mataKuliah = $value;
+        break;
+      }
+    }
+    Session::put('listMataKuliah', $listMataKuliah);
+    // dd($request->all());
     return redirect()->route('admin.matakuliah')->with("response", $response);
   }
 
   public function pagePeriode() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     return view('admin.periode');
   }
 
@@ -129,6 +191,9 @@ class AdminController extends Controller
   }
 
   public function pageKelas() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     return view('admin.kelas');
   }
 
@@ -142,33 +207,73 @@ class AdminController extends Controller
         "jadwal_jam" => ["required", ],
         "jadwal_hari" => ["required", ],
         "periode" => ["required", new PeriodeValid],
-        "dosen_pengajar" => ["required", new DosenValid],
-        "sks" => ["required", "integer", "min:2"],
       ]
     );
+    $response["status"] = "success";
+    $response["message"] = "Berhasil tambah kelas!";
+    $kelas = [
+      "id" => count(Session::get('listKelas', [])),
+      "mata_kuliah" => $request->mata_kuliah,
+      "jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
+      "jadwal_hari" => $request->jadwal_hari,
+      "jadwal_jam" => $request->jadwal_jam,
+      "periode" => $request->periode,
+      "dosen" => $request->dosen_pengajar,
+      "listMahasiswa" => [],
+      "listAbsensi" => [],
+    ];
+    Session::push('listKelas', $kelas);
+    return redirect()->route('admin.kelas')->with("response", $response);
+  }
 
-    // if ($request->submit) {
-    //   if (
-    //     $request->mata_kuliah == "" ||
-    //     $request->jadwal == "" ||
-    //     $request->periode == "" ||
-    //     $request->dosen_pengajar == ""
-    //   ) {
-    //     $response["status"] = "failed";
-    //     $response["message"] = "Semua field harus terisi!";
-    //   }
-    //   else {
-        $response["status"] = "success";
-        $response["message"] = "Berhasil tambah kelas!";
-        $kelas = [
-          "mata_kuliah" => $request->mata_kuliah,
-          "jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
-          "periode" => $request->periode,
-          "dosen" => $request->dosen_pengajar,
-        ];
-        Session::push('listKelas', $kelas);
-    //   }
-    // }
+  public function pageEditKelas($id) {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
+    $listKelas = Session::get('listKelas', []);
+    $kelas = null;
+    foreach ($listKelas as $key => $value) {
+      if ($value["id"] == $id) {
+        $kelas = $value;
+      }
+    }
+    if ($kelas == null) {
+      return redirect()->route('admin.kelas');
+    }
+    return view('admin.editKelas', compact('kelas'));
+  }
+
+  public function doEditKelas(Request $request) {
+    $response["status"] = "failed";
+    $response["message"] = "";
+
+    $request->validate(
+      [
+        "mata_kuliah" => ["required", new MataKuliahValid],
+        "jadwal_jam" => ["required", ],
+        "jadwal_hari" => ["required", ],
+        "periode" => ["required", new PeriodeValid],
+      ]
+    );
+    $response["status"] = "success";
+    $response["message"] = "Berhasil edit kelas!";
+    $listKelas = Session::get('listKelas', []);
+    foreach ($listKelas as $key => $value) {
+      if ($value['id'] == $request->id) {
+        $listKelas[$key]["mata_kuliah"] = $request->mata_kuliah;
+        $listKelas[$key]["jadwal"] = $request->jadwal_hari . " " . $request->jadwal_jam;
+        $listKelas[$key]["jadwal_hari"] = $request->jadwal_hari;
+        $listKelas[$key]["jadwal_jam"] = $request->jadwal_jam;
+        $listKelas[$key]["periode"] = $request->periode;
+      }
+    }
+    // $kelas = [
+    //   "mata_kuliah" => $request->mata_kuliah,
+    //   "jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
+    //   "periode" => $request->periode,
+    //   "dosen" => $request->dosen_pengajar,
+    // ];
+    Session::put('listKelas', $listKelas);
     return redirect()->route('admin.kelas')->with("response", $response);
   }
 }

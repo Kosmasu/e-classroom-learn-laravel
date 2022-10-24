@@ -12,8 +12,18 @@ use Monolog\Handler\PushoverHandler;
 
 class DosenController extends Controller
 {
-  public function pageHome()
-  {
+  private function checkLoggedInUser() {
+    $user = Session::get('currentUser');
+    if ($user == null || $user['role'] == "admin" || $user['role'] == "mahasiswa") {
+      return redirect()->route('auth.login');
+    }
+    return false;
+  }
+
+  public function pageHome() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     $currentUser = Session::get('currentUser') ?? null;
     if (!$currentUser) {
       return redirect()->route('auth.login');
@@ -32,8 +42,10 @@ class DosenController extends Controller
     return view('dosen.home', compact('listPeriode', 'listKelasDosen'));
   }
 
-  public function pageProfile()
-  {
+  public function pageProfile() {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     $currentUser = Session::get('currentUser');
     return view('dosen.profile', compact('currentUser'));
   }
@@ -58,63 +70,33 @@ class DosenController extends Controller
       'status' => 'failed',
       'message' => 'Gagal!',
     ];
-    // if ($request->submit) {
-    //   $isUsernameUnique = true;
-    //   foreach ($listDosen as $item) {
-    //     if ($item['username'] == $currentUser['username'] && $item != $currentUser) {
-    //       $isUsernameUnique = false; break;
-    //     }
-    //   }
-    //   if (
-    //     $request->username == "" ||
-    //     $request->email == "" ||
-    //     $request->nomor_telepon == "" ||
-    //     $request->password == "" ||
-    //     $request->confirm_password == ""
-    //   ) {
-    //     $response = [
-    //       'status' => 'failed',
-    //       'message' => 'Isi semua field!'
-    //     ];
-    //   }
-    //   else if ($request->password != $request->confirm_password) {
-    //     $response = [
-    //       'status' => 'failed',
-    //       'message' => 'Password dan confirm password tidak sama!'
-    //     ];
-    //   }
-    //   else if (!$isUsernameUnique) {
-    //     $response = [
-    //       'status' => 'failed',
-    //       'message' => 'Username tidak unique!'
-    //     ];
-    //   }
-    //   else {
-        foreach ($listDosen as $i => $value) {
-          if ($value['username'] == $currentUser['username']) {
-            $currentUser['email'] = $request->email;
-            $currentUser['nomor_telepon'] = $request->nomor_telepon;
-            $currentUser['password'] = $request->password;
-            $currentUser['username'] = $request->username;
-            $listDosen[$i] = $currentUser;
-          }
-        }
-        Session::put('listDosen', $listDosen);
-        Session::put('currentUser', $currentUser);
-        $response = [
-          'status' => 'success',
-          'message' => 'Berhasil edit profile!'
-        ];
-    //   }
-    // }
+    foreach ($listDosen as $i => $value) {
+      if ($value['username'] == $currentUser['username']) {
+        $currentUser['email'] = $request->email;
+        $currentUser['nomor_telepon'] = $request->nomor_telepon;
+        $currentUser['password'] = $request->password;
+        $currentUser['username'] = $request->username;
+        $listDosen[$i] = $currentUser;
+      }
+    }
+    Session::put('listDosen', $listDosen);
+    Session::put('currentUser', $currentUser);
+    $response = [
+      'status' => 'success',
+      'message' => 'Berhasil edit profile!'
+    ];
     return redirect()->route('dosen.profile')->with('response', $response);
   }
 
   public function pageKelas(Request $request, $kode_periode = null) {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
     $currentUser = Session::get('currentUser') ?? null;
     $listPeriode = Session::get('listPeriode') ?? [];
     $listMataKuliah = Session::get('listMataKuliah');
-    $listPeriode = Session::get('listPeriode');
+    $listPeriode = Session::get('listPeriode', []);
+    $listKelas = Session::get('listKelas', []);
     // dd($kode_periode);
     if (!$kode_periode) {
       foreach ($listPeriode as $periode) {
@@ -148,5 +130,90 @@ class DosenController extends Controller
       return redirect()->route('dosen.kelas', ["kode_periode" => $request->kode_periode]);
     }
     return redirect()->route('dosen.kelas');
+  }
+
+  public function pageKelasDetail($id) {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
+    $kelas = [];
+    $listKelas = Session::get('listKelas', []);
+    foreach ($listKelas as $key => $value) {
+      if ($value['id'] == $id) {
+        $kelas = $value;
+        break;
+      }
+    }
+    return view('dosen.kelasDetail', compact('kelas', 'id'));
+  }
+
+  public function pageKelasAbsensi($id) {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
+    $kelas = [];
+    $listKelas = Session::get('listKelas', []);
+    foreach ($listKelas as $key => $value) {
+      if ($value['id'] == $id) {
+        $kelas = $value;
+        break;
+      }
+    }
+    $listMahasiswa = [];
+    foreach ($listKelas as $key => $value) {
+      if ($value['id'] == $id) {
+        $listMahasiswa = $value['listMahasiswa'];
+        break;
+      }
+    }
+    return view('dosen.kelasAbsensi', compact('listMahasiswa', 'kelas', 'id'));
+  }
+
+  public function pageKelasMahasiswa($id) {
+    if ($this->checkLoggedInUser()) {
+      return $this->checkLoggedInUser();
+    }
+    $listKelas = Session::get('listKelas', []);
+    $listMahasiswa = [];
+    foreach ($listKelas as $key => $value) {
+      if ($value['id'] == $id) {
+        $listMahasiswa = $value['listMahasiswa'];
+        break;
+      }
+    }
+    return view('dosen.kelasMahasiswa', compact('listMahasiswa', 'id'));
+  }
+
+  public function doCreateAbsensi(Request $request) {
+    $request->validate([
+      "minggu_ke" => ["required", ],
+      "materi" => ["required", ],
+      "deskripsi" => ["required", ],
+    ]);
+    $listMahasiswaAbsensi = $request->listMahasiswa;
+    foreach ($listMahasiswaAbsensi as $key => $mahasiswa) {
+      if (!array_key_exists('isHadir', $mahasiswa)) {
+        $listMahasiswaAbsensi[$key]['isHadir'] = false;
+      }
+    }
+    $absensi = [
+      "minggu_ke" => $request->minggu_ke,
+      "materi" => $request->materi,
+      "deskripsi" => $request->deskripsi,
+      "listKehadiran" => $listMahasiswaAbsensi,
+    ];
+    $listKelas = Session::get('listKelas', []);
+    foreach ($listKelas as $key => $value) {
+      if ($value['id'] == $request->id) {
+        $listKelas[$key]['listAbsensi'][] = $absensi;
+        break;
+      }
+    }
+    Session::put('listKelas', $listKelas);
+    $response = [
+      'status' => 'success',
+      'message' => 'Berhasil create absensi!'
+    ];
+    return redirect()->route('dosen.kelas.absensi', ['id' => $request->id])->with('response', $response);
   }
 }
