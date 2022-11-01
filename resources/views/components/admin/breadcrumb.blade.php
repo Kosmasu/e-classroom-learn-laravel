@@ -7,7 +7,7 @@
       {{-- concate url sebelumnya --}}
       @for ($j = 0; $j < $i; $j++)
         @php
-          $preUrl = $preUrl . $urls[$i] . '/';
+          $preUrl = $preUrl . $urls[$j] . '/';
         @endphp
       @endfor
       <li class="hover:underline capitalize {{ $i == count($urls) - 1 ? 'text-slate-700 font-semibold' : '' }} "><a

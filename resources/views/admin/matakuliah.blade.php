@@ -22,10 +22,14 @@
         <label class="w-full px-1" for="jurusan">Jurusan</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="jurusan" id="jurusan">
           <option selected disabled>Jurusan</option>
-          @foreach (Session::get("listJurusan") ?? [] as $jurusan)
-            <option value="{{ $jurusan["id"] }}">{{ $jurusan["nama"] }}</option>
+          @foreach ($listJurusan as $jurusan)
+            <option value="{{ $jurusan->jur_id }}">{{ $jurusan->jur_nama }}</option>
           @endforeach
         </select>
+      </div>
+      <div>
+        <label class="w-full px-1" for="sks">SKS</label>
+        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="number" name="sks" id="sks" placeholder="SKS">
       </div>
       @if (Session::has('response'))
         @if (Session::get('response')["status"] == "failed")
@@ -67,28 +71,17 @@
         </tr>
       </thead>
       <tbody>
-        @php
-          $ctr = 0;
-          $listJurusan = Session::get('listJurusan') ?? []
-        @endphp
-        @forelse (Session::get("listMataKuliah") ?? [] as $mataKuliah)
-          @php
-            $ctr++;
-            $jurusan = [];
-            foreach ($listJurusan as $item) {
-              if ($item['id'] == $mataKuliah['jurusan_id']) $jurusan = $item;
-            }
-          @endphp
+        @forelse ($listMataKuliah as $index => $mataKuliah)
           <tr class="odd:bg-slate-300 even:bg-slate-200">
-            <td class="px-2 py-1 text-center">{{ $ctr }}</td>
-            <td class="px-2 py-1 text-center">{{ $mataKuliah["kode"] }}</td>
-            <td class="px-2 py-1">{{ $mataKuliah["nama"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $mataKuliah["minimal_semester"] }}</td>
-            <td class="px-2 py-1">{{ $jurusan["nama"] }}</td>
+            <td class="px-2 py-1 text-center">{{ $index + 1 }}</td>
+            <td class="px-2 py-1 text-center">{{ $mataKuliah->matkul_id }}</td>
+            <td class="px-2 py-1">{{ $mataKuliah->matkul_nama }}</td>
+            <td class="px-2 py-1 text-center">{{ $mataKuliah->matkul_minimal_semester }}</td>
+            <td class="px-2 py-1">{{ $mataKuliah->jur_nama }}</td>
             <td class="text-center">
-              <form action="{{ route('admin.editMataKuliah', ['id' => $mataKuliah['kode']]) }}" method="GET">
+              <form action="{{ route('admin.editMataKuliah', ['id' => $mataKuliah->matkul_id]) }}" method="GET">
                 <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Edit">
-                <input type="hidden" name="id" value="{{ $mataKuliah["kode"] }}">
+                <input type="hidden" name="id" value="{{ $mataKuliah->matkul_id }}">
               </form>
             </td>
           </tr>

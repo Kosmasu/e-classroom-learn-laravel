@@ -11,20 +11,20 @@
     @csrf
     <div class="space-y-1">
       <div class="flex flex-col">
-        <label class="w-full px-1" for="nama_mata_kuliah">Kode Mata Kuliah: {{ $mataKuliah["kode"] }}</label>
-        <input type="hidden" name="id" value="{{ $mataKuliah ['kode'] }}">
+        <label class="w-full px-1" for="nama_mata_kuliah">Kode Mata Kuliah: {{ $mataKuliah->matkul_id }}</label>
+        <input type="hidden" name="id" value="{{ $mataKuliah->matkul_id }}">
       </div>
       <div class="flex flex-col">
         <label class="w-full px-1" for="nama_mata_kuliah">Nama Mata Kuliah</label>
-        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="text" name="nama_mata_kuliah" id="nama_mata_kuliah" placeholder="Nama Mata Kuliah" value="{{ $mataKuliah['nama'] }}">
+        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="text" name="nama_mata_kuliah" id="nama_mata_kuliah" placeholder="Nama Mata Kuliah" value="{{ $mataKuliah->matkul_nama }}">
       </div>
       <div class="flex flex-col">
         <label class="w-full px-1" for="minimal_semester">Minimal Semester</label>
-        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="text" name="minimal_semester" id="minimal_semester" placeholder="Minimal Semester" value="{{ $mataKuliah['minimal_semester'] }}">
+        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="text" name="minimal_semester" id="minimal_semester" placeholder="Minimal Semester" value="{{ $mataKuliah->matkul_minimal_semester }}">
       </div>
       <div>
         <label class="w-full px-1" for="sks">SKS</label>
-        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="number" name="sks" id="sks" placeholder="SKS" value="{{ $mataKuliah['sks'] }}">
+        <input class="w-full  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="number" name="sks" id="sks" placeholder="SKS" value="{{ $mataKuliah->matkul_sks }}">
       </div>
       @if (Session::has('response'))
         @if (Session::get('response')["status"] == "failed")

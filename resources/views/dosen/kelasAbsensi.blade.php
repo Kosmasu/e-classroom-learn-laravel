@@ -38,8 +38,6 @@
 
           <script>
             function checkAll() {
-
-              console.log('aaaa');
               let listCheckbox = document.getElementsByClassName('checkbox-is-hadir')
               for (let i = 0; i < listCheckbox.length; i++) {
                 const element = listCheckbox[i];
@@ -48,7 +46,6 @@
               console.log('listCheckbox:',listCheckbox);
             }
             function uncheckAll() {
-              console.log('bbb');
               let listCheckbox = document.getElementsByClassName('checkbox-is-hadir')
               for (let i = 0; i < listCheckbox.length; i++) {
                 const element = listCheckbox[i];

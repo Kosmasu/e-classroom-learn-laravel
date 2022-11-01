@@ -48,21 +48,15 @@
         </tr>
       </thead>
       <tbody>
-        @php
-          $ctr = 0;
-        @endphp
-        @forelse (Session::get("listPeriode") ?? [] as $periode)
-          @php
-            $ctr++;
-          @endphp
+        @forelse ($listPeriode as $index=>$periode)
           <tr class="odd:bg-slate-300 even:bg-slate-200">
-            <td class="px-2 py-1 text-center">{{ $ctr }}</td>
-            <td class="px-2 py-1 text-center">{{ $periode["tahun_awal"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $periode["tahun_akhir"] }}</td>
+            <td class="px-2 py-1 text-center">{{ $index+1 }}</td>
+            <td class="px-2 py-1 text-center">{{ $periode->per_tahun_awal }}</td>
+            <td class="px-2 py-1 text-center">{{ $periode->per_tahun_akhir }}</td>
             <td class="px-2 py-1 text-center">
               <form action="{{ route('admin.doSetPeriode') }}" method="GET" onclick="gantiPeriode(event)">
-                <input class="scale-150" type="checkbox" name="status" {{ $periode["status"] ? 'checked' : '' }} value="true">
-                <input type="hidden" name="id" value="{{ $periode["id"] }}">
+                <input class="scale-150" type="checkbox" name="status" {{ $periode->per_status ? 'checked' : '' }} value="true">
+                <input type="hidden" name="id" value="{{ $periode->per_id }}">
               </form>
             </td>
             <td class="text-center">

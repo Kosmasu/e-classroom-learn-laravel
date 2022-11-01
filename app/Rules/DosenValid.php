@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use PhpParser\Node\Stmt\Foreach_;
 
@@ -27,9 +28,9 @@ class DosenValid implements Rule
      */
     public function passes($attribute, $value)
     {
-      $listDosen = Session::get('listDosen') ?? [];
+      $listDosen = DB::table('dosen')->get();
       foreach ($listDosen as $dosen) {
-        if ($dosen["username"] == $value) {
+        if ($dosen->dsn_username == $value) {
           return true; break;
         }
       }

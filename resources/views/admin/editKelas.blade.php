@@ -11,15 +11,15 @@
     @csrf
     <div class="space-y-1">
       <div class="flex flex-col">
-        <label class="w-full px-1" for="nama_mata_kuliah">Id Kelas: {{ $kelas["id"] }}</label>
-        <input type="hidden" name="id" value="{{ $kelas ['id'] }}">
+        <label class="w-full px-1" for="nama_mata_kuliah">Id Kelas: {{ $kelas->kel_id }}</label>
+        <input type="hidden" name="id" value="{{ $kelas->kel_id }}">
       </div>
       <div>
         <label class="w-full px-1" for="mata_kuliah">Mata Kuliah</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="mata_kuliah" id="mata_kuliah">
           <option selected disabled>Mata Kuliah</option>
-          @foreach (Session::get("listMataKuliah") ?? [] as $item)
-            <option {{ $item["kode"] == $kelas["mata_kuliah"] ? "selected" : "" }} value="{{ $item["kode"] }}">{{ $item["nama"] }}</option>
+          @foreach ($listMataKuliah as $item)
+            <option {{ $item->matkul_id == $kelas->matkul_id ? "selected" : "" }} value="{{ $item->matkul_id }}">{{ $item->matkul_nama }}</option>
           @endforeach
         </select>
       </div>
@@ -28,21 +28,21 @@
         <div class="w-full space-x-1 flex">
           <select class="w-1/2 mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="jadwal_hari" id="jadwal_hari">
             <option disabled>Hari</option>
-            <option {{ $kelas["jadwal_hari"] == "Senin" ? "selected" : "" }} value="Senin">Senin</option>
-            <option {{ $kelas["jadwal_hari"] == "Selasa" ? "selected" : "" }} value="Selasa">Selasa</option>
-            <option {{ $kelas["jadwal_hari"] == "Rabu" ? "selected" : "" }} value="Rabu">Rabu</option>
-            <option {{ $kelas["jadwal_hari"] == "Kamis" ? "selected" : "" }} value="Kamis">Kamis</option>
-            <option {{ $kelas["jadwal_hari"] == "Jumat" ? "selected" : "" }} value="Jumat">Jumat</option>
+            <option {{ $kelas->jadwal_hari == "Senin" ? "selected" : "" }} value="Senin">Senin</option>
+            <option {{ $kelas->jadwal_hari == "Selasa" ? "selected" : "" }} value="Selasa">Selasa</option>
+            <option {{ $kelas->jadwal_hari == "Rabu" ? "selected" : "" }} value="Rabu">Rabu</option>
+            <option {{ $kelas->jadwal_hari == "Kamis" ? "selected" : "" }} value="Kamis">Kamis</option>
+            <option {{ $kelas->jadwal_hari == "Jumat" ? "selected" : "" }} value="Jumat">Jumat</option>
           </select>
-          <input class="w-1/2  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="time" name="jadwal_jam" id="jadwal_jam" placeholder="Jadwal Kelas" value="{{ $kelas["jadwal_jam"] }}">
+          <input class="w-1/2  mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" type="time" name="jadwal_jam" id="jadwal_jam" placeholder="Jadwal Kelas" value="{{ $kelas->jadwal_jam }}">
         </div>
       </div>
       <div>
         <label class="w-full px-1" for="periode">Periode</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="periode" id="periode">
           <option selected disabled>Periode</option>
-          @foreach (Session::get("listPeriode") ?? [] as $item)
-            <option {{ $item["id"] == $kelas["periode"] ? "selected" : "" }} value="{{ $item["id"] }}">{{ $item["tahun_awal"] . '/' . $item["tahun_akhir"] }}</option>
+          @foreach ($listPeriode as $item)
+            <option {{ $item->per_id == $kelas->per_id ? "selected" : "" }} value="{{ $item->per_id }}">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</option>
           @endforeach
         </select>
       </div>

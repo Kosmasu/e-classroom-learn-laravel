@@ -32,8 +32,8 @@
               <label class="w-full px-1" for="jurusan">Jurusan</label>
               <select class="w-full mt-1 rounded px-1 py-1 bg-gray-200 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="jurusan" id="jurusan">
                 <option selected disabled>Jurusan</option>
-                @foreach (Session::get("listJurusan") ?? [] as $jurusan)
-                  <option value="{{ $jurusan["id"] }}">{{ $jurusan["nama"] }}</option>
+                @foreach ($listJurusan as $jurusan)
+                  <option value="{{ $jurusan->jur_id }}">{{ $jurusan->jur_nama }}</option>
                 @endforeach
               </select>
             </div>

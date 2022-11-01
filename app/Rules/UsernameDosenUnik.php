@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class UsernameDosenUnik implements Rule
@@ -26,13 +27,11 @@ class UsernameDosenUnik implements Rule
      */
     public function passes($attribute, $value)
     {
-      $listDosen = [];
-
-      $listDosen = Session::get('listDosen') ?? [];
+      $listDosen = DB::table('dosen')->get();
 
       $isUnique = true;
       foreach ($listDosen as $key => $value) {
-        if ($value["username"] == $value) {
+        if ($value->dsn_username == $value) {
           $isUnique = false; break;
         }
       }

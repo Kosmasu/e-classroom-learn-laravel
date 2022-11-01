@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class MataKuliahValid implements Rule
@@ -26,9 +27,9 @@ class MataKuliahValid implements Rule
      */
     public function passes($attribute, $value)
     {
-      $listMataKuliah = Session::get('listMataKuliah') ?? [];
+      $listMataKuliah = DB::table('matakuliah')->get();
       foreach ($listMataKuliah as $mataKuliah) {
-        if ($mataKuliah["kode"] == $value) {
+        if ($mataKuliah->matkul_id == $value) {
           return true; break;
         }
       }

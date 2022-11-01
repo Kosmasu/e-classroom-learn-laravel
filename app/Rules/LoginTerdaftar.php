@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class LoginTerdaftar implements Rule
@@ -35,17 +36,17 @@ class LoginTerdaftar implements Rule
       $isDosen = false;
       $isAdmin = $this->request->username == "admin" && $this->request->password == "admin";
 
-      $listMahasiswa = Session::get('listMahasiswa') ?? [];
-      $listDosen = Session::get('listDosen') ?? [];
+      $listMahasiswa = DB::table('mahasiswa')->get();
+      $listDosen = DB::table('dosen')->get();
 
       foreach ($listMahasiswa as $item) {
-        if ($this->request->username == $item["nrp"] && $this->request->password == $item["password"]) {
+        if ($this->request->username == $item->mhs_nrp && $this->request->password == $item->mhs_password) {
           $isMahasiswa = true; break;
         }
       }
 
       foreach ($listDosen as $item) {
-        if ($this->request->username == $item["username"] && $this->request->password == $item["password"]) {
+        if ($this->request->username == $item->dsn_username && $this->request->password == $item->dsn_password) {
           $isDosen = true; break;
         }
       }

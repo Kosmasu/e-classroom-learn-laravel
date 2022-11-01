@@ -12,7 +12,7 @@ class MahasiswaController extends Controller
 {
   private function checkLoggedInUser() {
     $user = Session::get('currentUser');
-    if ($user == null || $user['role'] == "admin" || $user['role'] == "dosen") {
+    if ($user == null || $user->role == "dosen" || $user->role == "mahasiswa") {
       return redirect()->route('auth.login');
     }
   }
@@ -213,7 +213,7 @@ class MahasiswaController extends Controller
         }
       }
     }
-    // dd($listAbsensi);  
+    // dd($listAbsensi);
     return view('mahasiswa.myKelasAbsensi', compact('listAbsensi', 'id'));
   }
 }

@@ -14,8 +14,8 @@
         <label class="w-full px-1" for="mata_kuliah">Mata Kuliah</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="mata_kuliah" id="mata_kuliah">
           <option selected disabled>Mata Kuliah</option>
-          @foreach (Session::get("listMataKuliah") ?? [] as $item)
-            <option value="{{ $item["kode"] }}">{{ $item["nama"] }}</option>
+          @foreach ($listMataKuliah as $item)
+            <option value="{{ $item->matkul_id }}">{{ $item->matkul_nama }}</option>
           @endforeach
         </select>
       </div>
@@ -37,8 +37,8 @@
         <label class="w-full px-1" for="periode">Periode</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="periode" id="periode">
           <option selected disabled>Periode</option>
-          @foreach (Session::get("listPeriode") ?? [] as $item)
-            <option value="{{ $item["id"] }}">{{ $item["tahun_awal"] . '/' . $item["tahun_akhir"] }}</option>
+          @foreach ($listPeriode as $item)
+            <option value="{{ $item->per_id }}">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</option>
           @endforeach
         </select>
       </div>
@@ -46,8 +46,8 @@
         <label class="w-full px-1" for="dosen_pengajar">Dosen Pengajar</label>
         <select class="w-full mt-1 rounded px-1 py-1 bg-gray-50 text-gray-800 border border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900" name="dosen_pengajar" id="dosen_pengajar">
           <option selected disabled>Dosen</option>
-          @foreach (Session::get("listDosen") ?? [] as $item)
-            <option value="{{ $item["username"] }}">{{ $item["nama_lengkap"] }}</option>
+          @foreach ($listDosen as $item)
+            <option value="{{ $item->dsn_username }}">{{ $item->dsn_nama }}</option>
           @endforeach
         </select>
       </div>
@@ -91,32 +91,15 @@
         </tr>
       </thead>
       <tbody>
-        @php
-          $ctr = 0;
-          $listMataKuliah = Session::get('listMataKuliah');
-          $listPeriode = Session::get('listPeriode');
-          $listDosen = Session::get('listDosen');
-        @endphp
-        @forelse (Session::get("listKelas") ?? [] as $item)
-          @php
-            $ctr++;
-            $mataKuliah = [];
-            foreach ($listMataKuliah as $item2) { if ($item2['kode'] == $item['mata_kuliah']) $mataKuliah = $item2['nama']; }
-
-            $periode = [];
-            foreach ($listPeriode as $item2) { if ($item2['id'] == $item['periode']) $periode = $item2["tahun_awal"] . '/' . $item2["tahun_akhir"]; }
-
-            $dosen = [];
-            foreach ($listDosen as $item2) { if ($item2['username'] == $item['dosen']) $dosen = $item2["nama_lengkap"]; }
-          @endphp
+        @forelse ($listKelas as $index => $item)
           <tr class="odd:bg-slate-300 even:bg-slate-200">
-            <td class="px-2 py-1 text-center">{{ $ctr }}</td>
-            <td class="px-2 py-1 text-center">{{ $mataKuliah }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["jadwal"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $periode }}</td>
-            <td class="px-2 py-1 text-center">{{ $dosen }}</td>
+            <td class="px-2 py-1 text-center">{{ $index + 1 }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->matkul_nama }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->kel_jadwal }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->dsn_nama }}</td>
             <td class="text-center">
-              <form action="{{ route('admin.editKelas', ['id' => $item['id']]) }}" method="GET">
+              <form action="{{ route('admin.editKelas', ['id' => $item->kel_id]) }}" method="GET">
                 <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Edit">
               </form>
             </td>

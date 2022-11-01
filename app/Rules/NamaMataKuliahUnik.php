@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class NamaMataKuliahUnik implements Rule
@@ -26,7 +27,7 @@ class NamaMataKuliahUnik implements Rule
      */
     public function passes($attribute, $value)
     {
-      $listMataKuliah = Session::get("listMataKuliah") ?? [];
+      $listMataKuliah = DB::table('matakuliah')->get();
       foreach ($listMataKuliah as $mataKuliah) {
         if ($mataKuliah['nama'] == $value) return false;
       }

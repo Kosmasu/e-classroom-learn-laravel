@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class NomorTeleponUnik implements Rule
@@ -29,17 +30,17 @@ class NomorTeleponUnik implements Rule
       $listMahasiswa = [];
       $listDosen = [];
 
-      $listMahasiswa = Session::get('listMahasiswa') ?? [];
-      $listDosen = Session::get('listDosen') ?? [];
+      $listMahasiswa = DB::table('mahasiswa')->get();
+      $listDosen = DB::table('dosen')->get();
 
       $isUnique = true;
       foreach ($listMahasiswa as $key => $item) {
-        if ($item['nomor_telepon'] == $value) {
+        if ($item->mhs_nomor_telepon == $value) {
           $isUnique = false; break;
         }
       }
       foreach ($listDosen as $key => $item) {
-        if ($item['nomor_telepon'] == $value) {
+        if ($item->dsn_nomor_telepon == $value) {
           $isUnique = false; break;
         }
       }

@@ -7,13 +7,14 @@ use App\Rules\MataKuliahValid;
 use App\Rules\NamaMataKuliahUnik;
 use App\Rules\PeriodeValid;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
   private function checkLoggedInUser() {
     $user = Session::get('currentUser');
-    if ($user == null || $user['role'] == "dosen" || $user['role'] == "mahasiswa") {
+    if ($user == null || $user->role == "dosen" || $user->role == "mahasiswa") {
       return redirect()->route('auth.login');
     }
     return false;
@@ -44,12 +45,11 @@ class AdminController extends Controller
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    if (!Session::has('listJurusan')) {
-      Session::push('listJurusan', ['id'=>'INF', 'nama'=>'S1-Informatika']);
-      Session::push('listJurusan', ['id'=>'SIB', 'nama'=>'S1-Sistem Informasi Bisnis']);
-      Session::push('listJurusan', ['id'=>'DKV', 'nama'=>'S1-Desain Komunikasi Visual']);
-    }
-    return view('admin.matakuliah');
+    $listJurusan = DB::table('jurusan')->get();
+    $listMataKuliah = DB::table('matakuliah')
+      ->join('jurusan', 'matakuliah.jur_id', '=', 'jurusan.jur_id')
+      ->get();
+    return view('admin.matakuliah', compact('listJurusan', 'listMataKuliah'));
   }
 
   public function doCreateMataKuliah(Request $request) {
@@ -61,25 +61,23 @@ class AdminController extends Controller
         "nama_mata_kuliah" => ["required", new NamaMataKuliahUnik],
         "minimal_semester" => ["required", "integer", "min:1", "max:8"],
         "jurusan" => ["required", ],
+        "sks" => ["required", "integer", "min:2"],
       ]
     );
     $response["status"] = "success";
     $response["message"] = "Berhasil tambah mata kuliah!";
-    $jurusan = null;
-    foreach (Session::get('listJurusan') ?? [] as $item) {
-      if ($request->jurusan == $item["id"]) {
-        $jurusan = $item;
-        break;
-      }
-    }
-    $matakuliah = [
-      "kode" => substr($jurusan["id"], 0, 3) . substr($request->nama_mata_kuliah, 0, 2),
-      "nama" => $request->nama_mata_kuliah,
-      "minimal_semester" => $request->minimal_semester,
-      "jurusan_id" => $jurusan["id"],
-      "sks" => $request->sks,
-    ];
-    Session::push('listMataKuliah', $matakuliah);
+    $jurusan = DB::table('jurusan')
+      ->where('jur_id', '=', $request->jurusan)
+      ->first();
+    DB::table('matakuliah')->insert(
+      [
+        "matkul_id" => substr($jurusan->jur_id, 0, 3) . strtoupper(substr($request->nama_mata_kuliah, 0, 2)),
+        "matkul_nama" => $request->nama_mata_kuliah,
+        "matkul_minimal_semester" => $request->minimal_semester,
+        "jur_id" => $jurusan->jur_id,
+        "matkul_sks" => $request->sks,
+      ]
+    );
     return redirect()->route('admin.matakuliah')->with("response", $response);
   }
 
@@ -87,18 +85,9 @@ class AdminController extends Controller
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    if (!Session::has('listJurusan')) {
-      Session::push('listJurusan', ['id'=>'INF', 'nama'=>'S1-Informatika']);
-      Session::push('listJurusan', ['id'=>'SIB', 'nama'=>'S1-Sistem Informasi Bisnis']);
-      Session::push('listJurusan', ['id'=>'DKV', 'nama'=>'S1-Desain Komunikasi Visual']);
-    }
-    $mataKuliah = null;
-    $listMataKuliah = Session::get('listMataKuliah') ?? [];
-    foreach ($listMataKuliah as $key => $value) {
-      if ($value["kode"] == $id) {
-        $mataKuliah = $value;
-      }
-    }
+    $mataKuliah = DB::table('matakuliah')
+      ->where('matkul_id', '=', $id)
+      ->first();
     if ($mataKuliah == null) {
       return redirect()->route('admin.matakuliah');
     }
@@ -116,21 +105,18 @@ class AdminController extends Controller
         "sks" => ["required", "integer", "min:2"],
       ]
     );
-    $response["status"] = "success";
-    $response["message"] = "Berhasil edit mata kuliah!";
-    $listMataKuliah = Session::get('listMataKuliah') ?? [];
-    $mataKuliah = null;
-    foreach ($listMataKuliah as $key => $value) {
-      if ($value["kode"] == $request->id) {
-        $listMataKuliah[$key]["nama"] = $request->nama_mata_kuliah;
-        $listMataKuliah[$key]["minimal_semester"] = $request->minimal_semester;
-        $listMataKuliah[$key]["sks"] = $request->sks;
-        $mataKuliah = $value;
-        break;
-      }
+    $result = DB::table('matakuliah')->update
+    (
+      [
+        "matkul_nama" => $request->nama_mata_kuliah,
+        "matkul_minimal_semester" => $request->minimal_semester,
+        "matkul_sks" => $request->sks,
+      ]
+    );
+    if ($result) {
+      $response["status"] = "success";
+      $response["message"] = "Berhasil edit mata kuliah!";
     }
-    Session::put('listMataKuliah', $listMataKuliah);
-    // dd($request->all());
     return redirect()->route('admin.matakuliah')->with("response", $response);
   }
 
@@ -138,7 +124,8 @@ class AdminController extends Controller
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    return view('admin.periode');
+    $listPeriode = DB::table('periode')->get();
+    return view('admin.periode', compact('listPeriode'));
   }
 
   public function doCreatePeriode(Request $request) {
@@ -155,19 +142,11 @@ class AdminController extends Controller
       else {
         $response["status"] = "success";
         $response["message"] = "Berhasil tambah periode!";
-
-        $id = 0;
-        if (Session::has('listPeriode')) {
-          $id = count(Session::get('listPeriode'));
-        }
-
-        $periode = [
-          'id' => $id,
-          'tahun_awal' => $request->tahun_awal,
-          'tahun_akhir' => $request->tahun_akhir,
-          'status' => false,
-        ];
-        Session::push('listPeriode', $periode);
+        DB::table('periode')->insert([
+          'per_tahun_awal' => $request->tahun_awal,
+          'per_tahun_akhir' => $request->tahun_akhir,
+          'per_status' => false,
+        ]);
       }
     }
     return redirect()->route('admin.periode')->with("response", $response);
@@ -176,17 +155,18 @@ class AdminController extends Controller
   public function doSetPeriode(Request $request) {
     // dd($request->all());
     $response["status"] = "failed";
-    $response["message"] = "";
-    $listPeriode = Session::get('listPeriode');
-    for ($i = 0; $i < count($listPeriode); $i++ ) {
-      $listPeriode[$i]["status"] = false;
-      if ($listPeriode[$i]["id"] == $request->id && $request->status) {
-        $listPeriode[$i]["status"] = true;
-      }
-    }
+    $response["message"] = "gagal";
+    $per_status = DB::table('periode')->where('per_id', '=', $request->id)->first();
+    $per_status = !$per_status->per_status;
+    $result = DB::table('periode')
+      ->where('per_status', '=', 1)
+      ->update([
+        "per_status" => 0
+      ]);
+    $result = DB::table('periode')->where('per_id', '=', $request->id)->update(['per_status' => $per_status]);
+    // dd($result)
     $response["status"] = "success";
     $response["message"] = "Berhasil toggle periode!";
-    Session::put('listPeriode', $listPeriode);
     return redirect()->route('admin.periode')->with("response", $response);
   }
 
@@ -194,7 +174,15 @@ class AdminController extends Controller
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    return view('admin.kelas');
+    $listMataKuliah = DB::table('matakuliah')->get();
+    $listPeriode = DB::table('periode')->get();
+    $listDosen = DB::table('dosen')->get();
+    $listKelas = DB::table('kelas')
+      ->join('matakuliah', 'kelas.matkul_id', '=', 'matakuliah.matkul_id')
+      ->join('periode', 'kelas.per_id', '=', 'periode.per_id')
+      ->join('dosen', 'kelas.dsn_username', '=', 'dosen.dsn_username')
+      ->get();
+    return view('admin.kelas', compact('listMataKuliah', 'listPeriode', 'listDosen', 'listKelas'));
   }
 
   public function doCreateKelas(Request $request) {
@@ -211,18 +199,12 @@ class AdminController extends Controller
     );
     $response["status"] = "success";
     $response["message"] = "Berhasil tambah kelas!";
-    $kelas = [
-      "id" => count(Session::get('listKelas', [])),
-      "mata_kuliah" => $request->mata_kuliah,
-      "jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
-      "jadwal_hari" => $request->jadwal_hari,
-      "jadwal_jam" => $request->jadwal_jam,
-      "periode" => $request->periode,
-      "dosen" => $request->dosen_pengajar,
-      "listMahasiswa" => [],
-      "listAbsensi" => [],
-    ];
-    Session::push('listKelas', $kelas);
+    DB::table('kelas')->insert([
+      "matkul_id" => $request->mata_kuliah,
+      "kel_jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
+      "per_id" => $request->periode,
+      "dsn_username" => $request->dosen_pengajar,
+    ]);
     return redirect()->route('admin.kelas')->with("response", $response);
   }
 
@@ -230,17 +212,15 @@ class AdminController extends Controller
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    $listKelas = Session::get('listKelas', []);
-    $kelas = null;
-    foreach ($listKelas as $key => $value) {
-      if ($value["id"] == $id) {
-        $kelas = $value;
-      }
-    }
+    $kelas = DB::table('kelas')->where('kel_id', '=', $id)->first();
+    $kelas->jadwal_hari = explode(" ", $kelas->kel_jadwal)[0];
+    $kelas->jadwal_jam = explode(" ", $kelas->kel_jadwal)[1];
     if ($kelas == null) {
       return redirect()->route('admin.kelas');
     }
-    return view('admin.editKelas', compact('kelas'));
+    $listMataKuliah = DB::table('matakuliah')->get();
+    $listPeriode = DB::table('periode')->get();
+    return view('admin.editKelas', compact('kelas', 'listMataKuliah', 'listPeriode'));
   }
 
   public function doEditKelas(Request $request) {
@@ -257,23 +237,11 @@ class AdminController extends Controller
     );
     $response["status"] = "success";
     $response["message"] = "Berhasil edit kelas!";
-    $listKelas = Session::get('listKelas', []);
-    foreach ($listKelas as $key => $value) {
-      if ($value['id'] == $request->id) {
-        $listKelas[$key]["mata_kuliah"] = $request->mata_kuliah;
-        $listKelas[$key]["jadwal"] = $request->jadwal_hari . " " . $request->jadwal_jam;
-        $listKelas[$key]["jadwal_hari"] = $request->jadwal_hari;
-        $listKelas[$key]["jadwal_jam"] = $request->jadwal_jam;
-        $listKelas[$key]["periode"] = $request->periode;
-      }
-    }
-    // $kelas = [
-    //   "mata_kuliah" => $request->mata_kuliah,
-    //   "jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
-    //   "periode" => $request->periode,
-    //   "dosen" => $request->dosen_pengajar,
-    // ];
-    Session::put('listKelas', $listKelas);
+    DB::table('kelas')->where('kel_id', '=', $request->id)->update([
+      "matkul_id" => $request->mata_kuliah,
+      "kel_jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
+      "per_id" => $request->periode,
+    ]);
     return redirect()->route('admin.kelas')->with("response", $response);
   }
 }

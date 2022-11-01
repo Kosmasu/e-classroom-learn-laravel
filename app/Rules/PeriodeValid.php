@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class PeriodeValid implements Rule
@@ -26,9 +27,9 @@ class PeriodeValid implements Rule
      */
     public function passes($attribute, $value)
     {
-      $listPeriode = Session::get('listPeriode') ?? [];
+      $listPeriode = DB::table('periode')->get();
       foreach ($listPeriode as $periode) {
-        if ($periode["id"] == $value) {
+        if ($periode->per_id == $value) {
           return true; break;
         }
       }
