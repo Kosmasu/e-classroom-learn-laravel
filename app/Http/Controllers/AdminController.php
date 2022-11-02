@@ -244,4 +244,14 @@ class AdminController extends Controller
     ]);
     return redirect()->route('admin.kelas')->with("response", $response);
   }
+
+  public function doDeleteKelas(Request $request) {
+    $response["status"] = "failed";
+    $response["message"] = "";
+
+    DB::table('kelas')->where('kel_id', '=', $request->id)->delete();
+    $response["status"] = "success";
+    $response["message"] = "berhasil delete";
+    return redirect()->back()->with('response', $response);
+  }
 }

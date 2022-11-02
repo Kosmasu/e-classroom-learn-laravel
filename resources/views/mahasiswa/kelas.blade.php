@@ -12,7 +12,7 @@
         name="kode_periode" id="kode_periode"
         onchange="gantiPeriode(event)">
         @forelse ($listPeriode as $item)
-          <option {{ $item["id"] == $kode_periode ? 'selected' : '' }} value="{{ $item["id"] }}">{{ $item["tahun_awal"] . '/' . $item["tahun_akhir"] }}</option>
+          <option {{ $item->per_id == $kode_periode ? 'selected' : '' }} value="{{ $item->per_id }}">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</option>
         @empty
           <option selected disabled>Tidak ada periode!</option>
         @endforelse
@@ -38,19 +38,13 @@
         </tr>
       </thead>
       <tbody>
-        @php
-          $ctr = 0;
-        @endphp
-        @forelse ($listKelasMahasiswa as $item)
-          @php
-            $ctr++;
-          @endphp
+        @forelse ($listKelasMahasiswa as $index => $item)
           <tr class="odd:bg-slate-300 even:bg-slate-200">
-            <td class="px-2 py-1 text-center">{{ $ctr }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["mata_kuliah"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $item['jadwal'] }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["periode"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["dosen"] }}</td>
+            <td class="px-2 py-1 text-center">{{ $index + 1 }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->matkul_nama }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->kel_jadwal }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->dsn_nama }}</td>
             <td class="text-center">
               <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
                 <i class="fa-solid fa-trash"></i>

@@ -98,9 +98,13 @@
             <td class="px-2 py-1 text-center">{{ $item->kel_jadwal }}</td>
             <td class="px-2 py-1 text-center">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</td>
             <td class="px-2 py-1 text-center">{{ $item->dsn_nama }}</td>
-            <td class="text-center">
+            <td class="text-center flex">
               <form action="{{ route('admin.editKelas', ['id' => $item->kel_id]) }}" method="GET">
                 <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Edit">
+              </form>
+              <form action="{{ route('admin.doDeleteKelas', ['id' => $item->kel_id]) }}" method="POST">
+                @csrf
+                <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Delete">
               </form>
             </td>
           </tr>

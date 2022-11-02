@@ -9,6 +9,7 @@
     <a href="{{ route('dosen.kelas.detail', ['id' => $id]) }}" class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer">Detail</a>
     <a href="{{ route('dosen.kelas.absensi', ['id' => $id]) }}" class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer">Absensi</a>
     <a href="{{ route('dosen.kelas.mahasiswa', ['id' => $id]) }}" class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer">Mahasiswa</a>
+    <a href="{{ route('dosen.kelas.pengumuman', ['id' => $id]) }}" class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer">Pengumuman</a>
   </div>
   <div class="mt-8 space-y-1">
     <div class="w-full text-lg">Jumlah Mahasiswa: {{ count($listMahasiswa) }}</div>
@@ -25,8 +26,8 @@
           @forelse ($listMahasiswa as $key => $mahasiswa)
             <tr class="odd:bg-slate-300 even:bg-slate-200">
               <td class="px-2 py-1 text-center">{{ $key + 1 }}</td>
-              <td class="px-2 py-1 text-center">{{ $mahasiswa['nrp'] }}</td>
-              <td class="px-2 py-1">{{ $mahasiswa['nama_lengkap'] }}</td>
+              <td class="px-2 py-1 text-center">{{ $mahasiswa->mhs_nrp }}</td>
+              <td class="px-2 py-1">{{ $mahasiswa->mhs_nama }}</td>
             </tr>
           @empty
             <tr class="odd:bg-slate-300 even:bg-slate-200">

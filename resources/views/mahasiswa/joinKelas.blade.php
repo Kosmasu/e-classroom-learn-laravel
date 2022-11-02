@@ -32,25 +32,25 @@
         @php
           $ctr = 0;
         @endphp
-        @forelse ($listKelasJurusan as $item)
+        @forelse ($listKelas as $item)
           @php
             $ctr++;
           @endphp
           <tr class="odd:bg-slate-300 even:bg-slate-200">
             <td class="px-2 py-1 text-center">{{ $ctr }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["mata_kuliah"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $item['jadwal'] }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["periode"] }}</td>
-            <td class="px-2 py-1 text-center">{{ $item["dosen"] }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->matkul_nama }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->kel_jadwal }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->per_tahun_awal . '/' . $item->per_tahun_akhir }}</td>
+            <td class="px-2 py-1 text-center">{{ $item->dsn_nama }}</td>
             <td class="text-center">
               <form action="{{ route('mahasiswa.doJoinKelas') }}" method="POST">
                 @csrf
-                @if ($item['joined'])
+                {{-- @if ($item->joined)
                   <input class="px-2 py-1 rounded text-gray-100 font-medium border border-gray-900 bg-green-600 hover:cursor-not-allowed" type="submit" name="submit" value="Joined" disabled>
-                @else
+                @else --}}
                   <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="Join">
-                @endif
-                <input type="hidden" name="id" value="{{ $item['id'] }}">
+                {{-- @endif --}}
+                <input type="hidden" name="id" value="{{ $item->kel_id }}">
               </form>
             </td>
           </tr>
