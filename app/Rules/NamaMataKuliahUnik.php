@@ -29,7 +29,7 @@ class NamaMataKuliahUnik implements Rule
     {
       $listMataKuliah = DB::table('matakuliah')->get();
       foreach ($listMataKuliah as $mataKuliah) {
-        if ($mataKuliah['nama'] == $value) return false;
+        if ($mataKuliah->matkul_nama == $value) return false;
       }
       return true;
     }

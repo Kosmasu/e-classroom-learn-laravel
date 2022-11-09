@@ -13,6 +13,7 @@ class Pengumuman extends Model
     protected $primaryKey = "pen_id";
     public $incrementing = true;
     public $timestamps = false;
+    protected $guarded = [];
 
     public function Kelas() {
       return $this->belongsTo(Kelas::class, 'kel_id', 'kel_id');

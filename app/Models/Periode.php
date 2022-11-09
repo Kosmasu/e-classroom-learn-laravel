@@ -13,6 +13,7 @@ class Periode extends Model
     protected $primaryKey = "per_id";
     public $incrementing = true;
     public $timestamps = false;
+    protected $guarded = [];
 
     public function Kelas() {
       return $this->hasMany(Kelas::class, 'per_id', 'per_id');

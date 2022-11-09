@@ -10,9 +10,10 @@ class Kelas extends Model
     use HasFactory;
 
     protected $table = "kelas";
-    protected $primaryKey = "kelas_id";
+    protected $primaryKey = "kel_id";
     public $incrementing = true;
     public $timestamps = false;
+    protected $guarded = [];
 
     public function Absensi() {
       return $this->hasMany(Absensi::class, 'kel_id', 'kel_id');
@@ -35,6 +36,6 @@ class Kelas extends Model
     }
 
     public function Mahasiswas() {
-      return $this->hasMany('kelasmahasiswa', 'kel_id', 'mhs_nrp');
+      return $this->belongsToMany('kelasmahasiswa', 'kel_id', 'mhs_nrp');
     }
 }

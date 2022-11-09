@@ -13,16 +13,17 @@ class Mahasiswa extends Model
     protected $primaryKey = "mhs_nrp";
     public $incrementing = false;
     public $timestamps = false;
+    protected $guarded = [];
 
     public function Jurusan() {
       return $this->belongsTo(Jurusan::class, 'jur_id', 'jur_id');
     }
 
     public function Absensis() {
-      return $this->hasMany('absensimahasiswa', 'mhs_nrp', 'abs_id');
+      return $this->belongsToMany('absensimahasiswa', 'mhs_nrp', 'abs_id');
     }
 
     public function Kelas() {
-      return $this->hasMany('kelasmahasiswa', 'mhs_nrp', 'kel_id');
+      return $this->belongsToMany('kelasmahasiswa', 'mhs_nrp', 'kel_id');
     }
 }

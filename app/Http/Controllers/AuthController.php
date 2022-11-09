@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dosen;
+use App\Models\Mahasiswa;
 use App\Rules\LoginTerdaftar;
 use App\Rules\MinVowel;
 use App\Rules\MinWord;
@@ -140,8 +142,20 @@ class AuthController extends Controller
     }
     if ($nomorUrut <= 9) $nrp = $tahunNrp . "00" . $nomorUrut;
     else if ($nomorUrut <= 99) $nrp = $tahunNrp . "0" . $nomorUrut;
-    else  $nrp = $tahunNrp . $nomorUrut;
-    $result = DB::table('mahasiswa')->insert(
+    // else  $nrp = $tahunNrp . $nomorUrut;
+    // $result = DB::table('mahasiswa')->insert(
+    //   [
+    //     "mhs_nrp" => $nrp,
+    //     "mhs_password" => $password,
+    //     "mhs_nama" => $request->nama_lengkap,
+    //     "mhs_nomor_telepon" => $request->nomor_telepon,
+    //     "mhs_tahun_angkatan" => $request->tahun_angkatan,
+    //     "mhs_email" => $request->email,
+    //     "mhs_jurusan" => $request->jurusan,
+    //     "mhs_tanggal_lahir" => $request->tanggal_lahir,
+    //   ]
+    // );
+    $result = Mahasiswa::insert(
       [
         "mhs_nrp" => $nrp,
         "mhs_password" => $password,
@@ -149,7 +163,7 @@ class AuthController extends Controller
         "mhs_nomor_telepon" => $request->nomor_telepon,
         "mhs_tahun_angkatan" => $request->tahun_angkatan,
         "mhs_email" => $request->email,
-        "mhs_jurusan" => $request->jurusan,
+        "jur_id" => $request->jurusan,
         "mhs_tanggal_lahir" => $request->tanggal_lahir,
       ]
     );
@@ -187,7 +201,19 @@ class AuthController extends Controller
         "konfirmasi_syarat_dan_ketentuan" => ["required"],
       ]
     );
-    $result = DB::table('dosen')->insert(
+    // $result = DB::table('dosen')->insert(
+    //   [
+    //     "dsn_username" => $request->username,
+    //     "dsn_password" => $request->password,
+    //     "dsn_tahun_kelulusan" => $request->tahun_kelulusan,
+    //     "dsn_jurusan_kelulusan" => $request->jurusan_kelulusan,
+    //     "dsn_nama" => $request->nama_lengkap,
+    //     "dsn_tanggal_lahir" => $request->tanggal_lahir,
+    //     "dsn_email" => $request->email,
+    //     "dsn_nomor_telepon" => $request->nomor_telepon,
+    //   ]
+    // );
+    $result = Dosen::insert(
       [
         "dsn_username" => $request->username,
         "dsn_password" => $request->password,

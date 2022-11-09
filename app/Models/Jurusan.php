@@ -13,6 +13,7 @@ class Jurusan extends Model
   protected $primaryKey = "jur_id";
   public $incrementing = false;
   public $timestamps = false;
+  protected $guarded = [];
 
   public function MataKuliah() {
     return $this->hasMany(MataKuliah::class, 'jur_id', 'jur_id');

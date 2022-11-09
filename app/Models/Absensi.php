@@ -13,12 +13,13 @@ class Absensi extends Model
     protected $primaryKey = "abs_id";
     public $incrementing = true;
     public $timestamps = false;
+    protected $guarded = [];
 
     public function Kelas() {
       return $this->belongsTo(Kelas::class, 'kel_id', 'kel_id');
     }
 
     public function Mahasiswas() {
-      return $this->hasMany('absensimahasiswa', 'abs_id', 'mhs_nrp');
+      return $this->belongsToMany('absensimahasiswa', 'abs_id', 'mhs_nrp');
     }
 }

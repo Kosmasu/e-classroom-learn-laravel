@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
+use App\Models\MataKuliah;
+use App\Models\Periode;
 use App\Rules\DosenValid;
 use App\Rules\MataKuliahValid;
 use App\Rules\NamaMataKuliahUnik;
@@ -69,7 +72,7 @@ class AdminController extends Controller
     $jurusan = DB::table('jurusan')
       ->where('jur_id', '=', $request->jurusan)
       ->first();
-    DB::table('matakuliah')->insert(
+    MataKuliah::insert(
       [
         "matkul_id" => substr($jurusan->jur_id, 0, 3) . strtoupper(substr($request->nama_mata_kuliah, 0, 2)),
         "matkul_nama" => $request->nama_mata_kuliah,
@@ -105,8 +108,7 @@ class AdminController extends Controller
         "sks" => ["required", "integer", "min:2"],
       ]
     );
-    $result = DB::table('matakuliah')->update
-    (
+    $result = MataKuliah::find($request->id)->update(
       [
         "matkul_nama" => $request->nama_mata_kuliah,
         "matkul_minimal_semester" => $request->minimal_semester,
@@ -142,7 +144,7 @@ class AdminController extends Controller
       else {
         $response["status"] = "success";
         $response["message"] = "Berhasil tambah periode!";
-        DB::table('periode')->insert([
+        Periode::insert([
           'per_tahun_awal' => $request->tahun_awal,
           'per_tahun_akhir' => $request->tahun_akhir,
           'per_status' => false,
@@ -163,7 +165,7 @@ class AdminController extends Controller
       ->update([
         "per_status" => 0
       ]);
-    $result = DB::table('periode')->where('per_id', '=', $request->id)->update(['per_status' => $per_status]);
+    $result = Periode::find($request->id)->update(['per_status' => $per_status]);
     // dd($result)
     $response["status"] = "success";
     $response["message"] = "Berhasil toggle periode!";
@@ -199,7 +201,7 @@ class AdminController extends Controller
     );
     $response["status"] = "success";
     $response["message"] = "Berhasil tambah kelas!";
-    DB::table('kelas')->insert([
+    Kelas::insert([
       "matkul_id" => $request->mata_kuliah,
       "kel_jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
       "per_id" => $request->periode,
@@ -237,7 +239,7 @@ class AdminController extends Controller
     );
     $response["status"] = "success";
     $response["message"] = "Berhasil edit kelas!";
-    DB::table('kelas')->where('kel_id', '=', $request->id)->update([
+    Kelas::find($request->id)->update([
       "matkul_id" => $request->mata_kuliah,
       "kel_jadwal" => $request->jadwal_hari . " " . $request->jadwal_jam,
       "per_id" => $request->periode,
@@ -249,7 +251,8 @@ class AdminController extends Controller
     $response["status"] = "failed";
     $response["message"] = "";
 
-    DB::table('kelas')->where('kel_id', '=', $request->id)->delete();
+    // DB::table('kelas')->where('kel_id', '=', $request->id)->delete();
+    Kelas::find($request->id)->delete();
     $response["status"] = "success";
     $response["message"] = "berhasil delete";
     return redirect()->back()->with('response', $response);
