@@ -19,11 +19,15 @@ class Mahasiswa extends Model
       return $this->belongsTo(Jurusan::class, 'jur_id', 'jur_id');
     }
 
-    public function Absensis() {
-      return $this->belongsToMany('absensimahasiswa', 'mhs_nrp', 'abs_id');
+    public function AbsensiMahasiswa() {
+      return $this->hasMany(AbsensiMahasiswa::class, 'mhs_nrp', 'mhs_nrp');
     }
 
-    public function Kelas() {
-      return $this->belongsToMany('kelasmahasiswa', 'mhs_nrp', 'kel_id');
+    public function KelasMahasiswa() {
+      return $this->hasMany(KelasMahasiswa::class, 'mhs_nrp', 'mhs_nrp');
+    }
+
+    public function MahasiswaModule() {
+      return $this->hasMany(MahasiswaModule::class, 'mhs_nrp', 'mhs_nrp');
     }
 }

@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Absensi extends Model
+class Module extends Model
 {
     use HasFactory;
 
-    protected $table = "absensi";
-    protected $primaryKey = "abs_id";
+    protected $table = "module";
+    protected $primaryKey = "mod_id";
     public $incrementing = true;
     public $timestamps = false;
     protected $guarded = [];
@@ -19,7 +19,7 @@ class Absensi extends Model
       return $this->belongsTo(Kelas::class, 'kel_id', 'kel_id');
     }
 
-    public function AbsensiMahasiswa() {
-      return $this->hasMany(AbsensiMahasiswa::class, 'abs_id', 'abs_id');
+    public function MahasiswaModule() {
+      return $this->hasMany(MahasiswaModule::class, 'mod_id', 'mod_id');
     }
 }

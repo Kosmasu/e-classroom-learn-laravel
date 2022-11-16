@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
+use App\Models\KelasMahasiswa;
+use App\Models\MahasiswaModule;
+use App\Models\Module;
 use App\Rules\NomorTeleponUnik;
 use App\Rules\NoSpasi;
 use App\Rules\PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -162,7 +167,7 @@ class MahasiswaController extends Controller
     else {
       $response["status"] = "success";
       $response["message"] = "berhasil join kelas";
-      DB::table('kelasmahasiswa')->insert([
+      KelasMahasiswa::insert([
         "kel_id" => $request->id,
         "mhs_nrp" => $user->mhs_nrp
       ]);
@@ -195,6 +200,7 @@ class MahasiswaController extends Controller
       ->where('kelasmahasiswa.kel_mhs_status', '=', '1')
       ->get()
     ;
+    // dd($listMyKelas);
     return view('mahasiswa.myKelas', compact('listMyKelas'));
   }
 
@@ -268,7 +274,7 @@ class MahasiswaController extends Controller
 
   public function doLeaveKelas(Request $request) {
     $user = Session::get('currentUser');
-    $result = DB::table('kelasmahasiswa')->where('kel_id', '=', $request->id)
+    $result = KelasMahasiswa::where('kel_id', '=', $request->id)
       ->where('mhs_nrp', '=', $user->mhs_nrp)
       ->update([
       "kel_mhs_status" => 0
@@ -277,5 +283,51 @@ class MahasiswaController extends Controller
     $response["status"] = "success";
     $response["message"] = "berhasil leave kelas";
     return redirect()->route('mahasiswa.joinKelas')->with('response', $response);
+  }
+
+  public function pageMyKelasModule($id) {
+    $listModule = Kelas::find($id)->Module;
+    foreach ($listModule as $key => $value) {
+      if ($value->mod_status == 1) {
+        $value->mod_status = "Aktif";
+      }
+      else {
+        $value->mod_status = "Inaktif";
+      }
+    }
+    return view('mahasiswa.myKelasModule', compact('id', 'listModule'));
+  }
+
+  public function pageMyKelasKumpulModule($id, $mod_id) {
+    $user = Session::get('currentUser');
+    $module = Module::find($mod_id);
+
+    $dateNow = now();
+    $dateDeadline = new DateTime($module->mod_deadline);
+    // dd($dateNow, $dateDeadline, $dateNow > $dateDeadline, $dateNow < $dateDeadline);
+    if ($dateNow > $dateDeadline) {
+      $response["status"] = "failed";
+      $response["message"] = "anda telat!";
+      $module->mod_status = 0;
+      $module->save();
+      return back()->with('response', $response);
+    }
+
+    $jawaban = MahasiswaModule::where('mod_id', '=', $mod_id)
+      ->where('mhs_nrp', '=', $user->mhs_nrp)
+      ->first()->mhs_mod_jawaban;
+    return view('mahasiswa.myKelasKumpulModule', compact('module', 'id', 'mod_id', 'jawaban'));
+  }
+
+  public function pageMyKelasDoKumpulModule(Request $request) {
+    $user = Session::get('currentUser');
+    MahasiswaModule::where('mod_id', '=', $request->mod_id)
+      ->where('mhs_nrp', '=', $user->mhs_nrp)
+      ->update([
+        "mhs_mod_jawaban" => $request->jawaban
+      ]);
+    $response["status"] = "success";
+    $response["message"] = "berhasil kumpul";
+    return back()->with('response', $response);
   }
 }

@@ -136,6 +136,11 @@ Route::prefix('/dosen')->group(function () {
     Route::get('/detail/{id}/mahasiswa', [DosenController::class, 'pageKelasMahasiswa'])->name('dosen.kelas.mahasiswa');
     Route::get('/detail/{id}/pengumuman', [DosenController::class, 'pageKelasPengumuman'])->name('dosen.kelas.pengumuman');
     Route::post('/detail/{id}/do-create-pengumuman', [DosenController::class, 'doCreatePengumuman'])->name('dosen.kelas.doCreatePengumuman');
+    Route::get('/detail/{id}/module', [DosenController::class, 'pageKelasModule'])->name('dosen.kelas.module');
+    Route::post('/detail/{id}/do-create-module', [DosenController::class, 'doCreateModule'])->name('dosen.kelas.doCreateModule');
+    Route::post('/detail/{id}/do-selesaikan-module', [DosenController::class, 'doSelesaikanModule'])->name('dosen.kelas.doSelesaikanModule');
+    Route::get('/detail/{id}/module/{mod_id}', [DosenController::class, 'pageKelasDetailModule'])->name('dosen.kelas.detailModule');
+    Route::post('/detail/{id}/grade-module', [DosenController::class, 'doGradeModule'])->name('dosen.kelas.doGradeModule');
   });
   Route::get('/ganti-periode', [DosenController::class, 'gantiPeriodeKelas'])->name('dosen.gantiPeriode');
 });
@@ -151,6 +156,9 @@ Route::prefix('/mahasiswa')->group(function () {
     Route::get('/{id}', [MahasiswaController::class, 'pageMyKelasDetail'])->name('mahasiswa.myKelas.detail');
     Route::get('/{id}/absensi', [MahasiswaController::class, 'pageMyKelasAbsensi'])->name('mahasiswa.myKelas.absensi');
     Route::get('/{id}/konfirmasi-leave', [MahasiswaController::class, 'pageMyKelasKonfirmasiLeave'])->name('mahasiswa.myKelas.konfirmasiLeave');
+    Route::get('/{id}/module', [MahasiswaController::class, 'pageMyKelasModule'])->name('mahasiswa.myKelas.module');
+    Route::get('/{id}/pageKumpulModule/{mod_id}', [MahasiswaController::class, 'pageMyKelasKumpulModule'])->name('mahasiswa.myKelas.kumpulModule');
+    Route::post('/{id}/doKumpulModule', [MahasiswaController::class, 'pageMyKelasDoKumpulModule'])->name('mahasiswa.myKelas.doKumpulModule');
     Route::post('/do-leave', [MahasiswaController::class, 'doLeaveKelas'])->name('mahasiswa.myKelas.doLeave');
   });
   Route::get('/join-kelas', [MahasiswaController::class, 'pageJoinKelas'])->name('mahasiswa.joinKelas');

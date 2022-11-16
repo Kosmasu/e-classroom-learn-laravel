@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
+use App\Models\AbsensiMahasiswa;
+use App\Models\Kelas;
+use App\Models\MahasiswaModule;
+use App\Models\Module;
+use App\Models\Pengumuman;
 use App\Rules\NomorTeleponUnik;
 use App\Rules\NoSpasi;
 use App\Rules\PasswordTidakBolehMengandungTigaKarakterBerurutanDenganUsername;
@@ -147,7 +153,7 @@ class DosenController extends Controller
         $listMahasiswaAbsensi[$key]['isHadir'] = false;
       }
     }
-    DB::table('absensi')->insert([
+    Absensi::insert([
       "abs_minggu_ke" => $request->minggu_ke,
       "abs_materi" => $request->materi,
       "abs_deskripsi" => $request->deskripsi,
@@ -162,7 +168,7 @@ class DosenController extends Controller
       else {
         $temp = 0;
       }
-      DB::table('absensimahasiswa')->insert([
+      AbsensiMahasiswa::insert([
         "abs_id" => $abs_id,
         "mhs_nrp" => $value["nrp"],
         "abs_mhs_is_hadir" => $temp,
@@ -200,7 +206,7 @@ class DosenController extends Controller
         $listMahasiswaAbsensi[$key]['isHadir'] = false;
       }
     }
-    DB::table('absensi')->where('abs_id', '=', $request->absensi_id)->update([
+    Absensi::find($request->absensi_id)->update([
       "abs_minggu_ke" => $request->minggu_ke,
       "abs_materi" => $request->materi,
       "abs_deskripsi" => $request->deskripsi,
@@ -213,7 +219,7 @@ class DosenController extends Controller
       else {
         $temp = 0;
       }
-      DB::table('absensimahasiswa')->where('abs_mhs_id', '=', $value['abs_mhs_id'])->update([
+      AbsensiMahasiswa::find($value['abs_mhs_id'])->update([
         "abs_id" => $abs_id,
         "mhs_nrp" => $value["nrp"],
         "abs_mhs_is_hadir" => $temp,
@@ -227,8 +233,8 @@ class DosenController extends Controller
   }
 
   public function doDeleteAbsensi(Request $request) {
-    DB::table('absensimahasiswa')->where('abs_id', '=', $request->id)->delete();
-    $result = DB::table('absensi')->where('abs_id', '=', $request->id)->delete();
+    AbsensiMahasiswa::where('abs_id', '=', $request->abs_id)->delete();
+    $result = Absensi::where('abs_id', '=', $request->abs_id)->delete();
     if ($result) {
       $response = [
         'status' => 'success',
@@ -268,7 +274,7 @@ class DosenController extends Controller
     $request->validate([
       "deskripsi" => ["required", ],
     ]);
-    $result = DB::table('pengumuman')->insert([
+    $result = Pengumuman::insert([
       "kel_id" => $request->id,
       "pen_deskripsi" => $request->deskripsi,
       "pen_link_penting" => $request->link_penting,
@@ -286,5 +292,86 @@ class DosenController extends Controller
       ];
     }
     return redirect()->back()->with('response', $response);
+  }
+
+  public function pageKelasModule(Request $request, $id) {
+    // dd($id);
+    $listModule = Kelas::find($id)->Module;
+    foreach ($listModule as $key => $value) {
+      if ($value->mod_status == 1) {
+        $value->mod_status = "Aktif";
+      }
+      else {
+        $value->mod_status = "Inaktif";
+      }
+    }
+    // dd($listModule);
+    return view('dosen.kelasModule', compact('id', 'listModule'));
+  }
+
+  public function doCreateModule(Request $request) {
+    $request->validate([
+      "mod_nama" => ["required", ],
+      "mod_jenis" => ["required", ],
+      "mod_keterangan" => ["required", ],
+      "mod_deadline" => ["required", ],
+    ]);
+    $module = new Module();
+    $module->mod_nama = $request->mod_nama;
+    $module->mod_jenis = $request->mod_jenis;
+    $module->mod_keterangan = $request->mod_keterangan;
+    $module->mod_deadline = $request->mod_deadline;
+    // dump($module);
+    // dd($request->mod_deadline);
+    $module->kel_id = $request->id;
+    $module->save();
+    // $module = Module::insert([
+    //   "mod_nama" => $request->mod_nama,
+    //   "mod_jenis" => $request->mod_jenis,
+    //   "mod_keterangan" => $request->mod_keterangan,
+    //   "mod_deadline" => $request->mod_deadline,
+    // ]);
+
+    $listKelasMahasiswa = Kelas::find($request->id)->KelasMahasiswa;
+    foreach ($listKelasMahasiswa as $key => $value) {
+      MahasiswaModule::insert([
+        "mhs_nrp" => $value->mhs_nrp,
+        "mod_id" => $module->mod_id,
+      ]);
+    }
+    $response = [
+      'status' => 'success',
+      'message' => 'Berhasil create module!'
+    ];
+    return redirect()->route('dosen.kelas.module', ['id' => $request->id])->with('response', $response);
+  }
+
+  public function doSelesaikanModule(Request $request) {
+    $module = Module::find($request->mod_id);
+    if ($module->mod_status == 1) {
+      $module->update([
+        "mod_status"=>"0"
+      ]);
+      $response = [
+        'status' => 'success',
+        'message' => 'Berhasil selesaikan module!'
+      ];
+    }
+    else {
+      $response = [
+        'status' => 'failed',
+        'message' => 'Module sudah inaktif!'
+      ];
+    }
+    return redirect()->route('dosen.kelas.module', ['id' => $request->id])->with('response', $response);
+  }
+
+  public function pageKelasDetailModule($id, $mod_id) {
+    $listMahasiswa = MahasiswaModule::where('mod_id', '=', $mod_id)->get();
+    return view('dosen.kelasDetailModule', compact('id', 'mod_id', 'listMahasiswa'));
+  }
+
+  public function doGradeModule($id) {
+
   }
 }
