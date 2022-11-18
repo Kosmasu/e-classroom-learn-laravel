@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dosen;
 use App\Models\Kelas;
 use App\Models\KelasMahasiswa;
+use App\Models\Mahasiswa;
 use App\Models\MahasiswaModule;
 use App\Models\Module;
 use App\Rules\NomorTeleponUnik;
@@ -329,5 +331,35 @@ class MahasiswaController extends Controller
     $response["status"] = "success";
     $response["message"] = "berhasil kumpul";
     return back()->with('response', $response);
+  }
+
+  public function pageSearch(Request $request) {
+    $q = $request->search ?? "";
+    $listMahasiswa = Mahasiswa::where('mhs_nama', 'like', '%'. $q . '%')->get();
+    $listDosen = Dosen::where('dsn_nama', 'like', '%'. $q . '%')->get();
+    return view('mahasiswa.search', compact('listMahasiswa', 'listDosen'));
+  }
+
+  public function pageDetailMahasiswa($id) {
+    $mahasiswa = Mahasiswa::find($id);
+    $user = Session::get('currentUser');
+    $listKelasMahasiswa = KelasMahasiswa::where('mhs_nrp', '=', $user->mhs_nrp)->get();
+    $isSekelas = false;
+    foreach ($listKelasMahasiswa as $item) {
+      $temp = KelasMahasiswa::where('kel_id', '=', $item->kel_id)->where('mhs_nrp', '=', $mahasiswa->mhs_nrp)->first();
+      if ($temp) {
+        $isSekelas = true; break;
+      }
+    }
+    if (!$isSekelas) {
+      return redirect()->route('mahasiswa.home');
+    }
+    $mahasiswa = Mahasiswa::find($id)->attributesToArray();
+    return view('mahasiswa.detailMahasiswa', compact('mahasiswa'));
+  }
+
+  public function pageDetailDosen($id) {
+    $dosen = Dosen::find($id)->attributesToArray();
+    return view('mahasiswa.detailDosen', compact('dosen'));
   }
 }

@@ -18,36 +18,25 @@
         </tr>
       </thead>
       <tbody>
+        @forelse ($listDosen as $key=>$item)
         <tr class="odd:bg-slate-300 even:bg-slate-200">
-          <td class="px-2 py-1 text-center">1.</td>
-          <td class="px-2 py-1">mimi</td>
-          <td class="px-2 py-1">Mikhael Setiawan</td>
+          <td class="px-2 py-1 text-center">{{ $key + 1}}</td>
+          <td class="px-2 py-1">{{ $item->dsn_username }}</td>
+          <td class="px-2 py-1">{{ $item->dsn_nama }}</td>
           <td class="text-center">
-            <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+            <form action="{{ route('admin.doBan') }}" method="POST">
+              @csrf
+              <input type="hidden" name="role" value="dosen">
+              <input type="hidden" name="id" value="{{ $item->dsn_username }}">
+              <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="{{ $item->dsn_status_ban == 1 ? "Unban" : "Ban" }}">
+            </form>
           </td>
         </tr>
+        @empty
         <tr class="odd:bg-slate-300 even:bg-slate-200">
-          <td class="px-2 py-1 text-center">2.</td>
-          <td class="px-2 py-1">usernamelagi</td>
-          <td class="px-2 py-1">Dosen 2</td>
-          <td class="text-center">
-            <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
+          <td colspan="4" class="px-2 py-1 text-center">Kosong...</td>
         </tr>
-        <tr class="odd:bg-slate-300 even:bg-slate-200">
-          <td class="px-2 py-1 text-center">3.</td>
-          <td class="px-2 py-1">usernameeeeeeee</td>
-          <td class="px-2 py-1">Dosen 3</td>
-          <td class="text-center">
-            <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>
+        @endforelse
       </tbody>
     </table>
   </div>

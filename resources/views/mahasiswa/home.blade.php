@@ -7,6 +7,7 @@
     <a class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" href="{{ route('mahasiswa.kelas') }}">List Kelas</a>
     <a class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" href="{{ route('mahasiswa.myKelas') }}">My Kelas</a>
     <a class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" href="{{ route('mahasiswa.joinKelas') }}">Join Kelas</a>
+    <a class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" href="{{ route('mahasiswa.search') }}">Search</a>
   </div>
 </div>
 @endsection

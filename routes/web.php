@@ -107,6 +107,7 @@ Route::prefix('/admin')->group(function () {
   Route::get('/',[AdminController::class, 'pageHome'])->name('admin.home');
   Route::get('/dosen', [AdminController::class, 'pageDosen'])->name('admin.dosen');
   Route::get('/mahasiswa', [AdminController::class, 'pageMahasiswa'])->name('admin.mahasiswa');
+  Route::post('/do-ban', [AdminController::class, 'doBan'])->name('admin.doBan');
   Route::get('/mata-kuliah', [AdminController::class, 'pageMataKuliah'])->name('admin.matakuliah');
   Route::post('/do-create-mata-kuliah', [AdminController::class, 'doCreateMataKuliah'])->name('admin.doCreateMataKuliah');
   Route::get('/edit-mata-kuliah/{id}', [AdminController::class, 'pageEditMataKuliah'])->name('admin.editMataKuliah');
@@ -121,7 +122,7 @@ Route::prefix('/admin')->group(function () {
   Route::post('/do-delete-kelas', [AdminController::class, 'doDeleteKelas'])->name('admin.doDeleteKelas');
 });
 
-Route::prefix('/dosen')->group(function () {
+Route::prefix('/dosen')->middleware('cekRole:dosen')->group(function () {
   Route::get('/', [DosenController::class, 'pageHome'])->name('dosen.home');
   Route::get('/profile', [DosenController::class, 'pageProfile'])->name('dosen.profile');
   Route::post('/gantiProfile', [DosenController::class, 'gantiProfile'])->name('dosen.gantiProfile');
@@ -142,10 +143,13 @@ Route::prefix('/dosen')->group(function () {
     Route::get('/detail/{id}/module/{mod_id}', [DosenController::class, 'pageKelasDetailModule'])->name('dosen.kelas.detailModule');
     Route::post('/detail/{id}/grade-module', [DosenController::class, 'doGradeModule'])->name('dosen.kelas.doGradeModule');
   });
+  Route::get('/search', [DosenController::class, 'pageSearch'])->name('dosen.search');
+  Route::get('/detail/mahasiswa/{id}', [DosenController::class, 'pageDetailMahasiswa'])->name('dosen.detail.mahasiswa');
+  Route::get('/detail/dosen/{id}', [DosenController::class, 'pageDetailDosen'])->name('dosen.detail.dosen');
   Route::get('/ganti-periode', [DosenController::class, 'gantiPeriodeKelas'])->name('dosen.gantiPeriode');
 });
 
-Route::prefix('/mahasiswa')->group(function () {
+Route::prefix('/mahasiswa')->middleware('cekRole:mahasiswa')->group(function () {
   Route::get('/', [MahasiswaController::class, 'pageHome'])->name('mahasiswa.home');
   Route::get('/profile', [MahasiswaController::class, 'pageProfile'])->name('mahasiswa.profile');
   Route::post('/gantiProfile', [MahasiswaController::class, 'gantiProfile'])->name('mahasiswa.gantiProfile');
@@ -161,6 +165,9 @@ Route::prefix('/mahasiswa')->group(function () {
     Route::post('/{id}/doKumpulModule', [MahasiswaController::class, 'pageMyKelasDoKumpulModule'])->name('mahasiswa.myKelas.doKumpulModule');
     Route::post('/do-leave', [MahasiswaController::class, 'doLeaveKelas'])->name('mahasiswa.myKelas.doLeave');
   });
+  Route::get('/search', [MahasiswaController::class, 'pageSearch'])->name('mahasiswa.search');
+  Route::get('/detail/mahasiswa/{id}', [MahasiswaController::class, 'pageDetailMahasiswa'])->name('mahasiswa.detail.mahasiswa');
+  Route::get('/detail/dosen/{id}', [MahasiswaController::class, 'pageDetailDosen'])->name('mahasiswa.detail.dosen');
   Route::get('/join-kelas', [MahasiswaController::class, 'pageJoinKelas'])->name('mahasiswa.joinKelas');
   Route::post('/do-join-kelas', [MahasiswaController::class, 'doJoinKelas'])->name('mahasiswa.doJoinKelas');
   Route::get('/ganti-periode', [MahasiswaController::class, 'gantiPeriodeKelas'])->name('mahasiswa.gantiPeriode');

@@ -49,7 +49,7 @@ class AuthController extends Controller
   public function login(Request $request) {
     $response = [
       "status"=>"failed",
-      "message"=>""
+      "message"=>"anda kena ban"
     ];
 
     $request->validate(
@@ -74,6 +74,12 @@ class AuthController extends Controller
         if ($request->username == $item->dsn_username && $request->password == $item->dsn_password) {
           $dosen = $item; break;
         }
+      }
+      if ($dosen && $dosen->dsn_status_ban == 1) {
+        return redirect()->route('auth.login')->with("response", $response);
+      }
+      if ($mahasiswa && $mahasiswa->mhs_status_ban == 1) {
+        return redirect()->route('auth.login')->with("response", $response);
       }
       $response["status"] = "success";
       $response["message"] = "Berhasil Login";

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dosen;
 use App\Models\Kelas;
+use App\Models\Mahasiswa;
 use App\Models\MataKuliah;
 use App\Models\Periode;
 use App\Rules\DosenValid;
@@ -34,14 +36,31 @@ class AdminController extends Controller
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    return view('admin.dosen');
+    $listDosen = Dosen::all();
+    return view('admin.dosen', compact('listDosen'));
   }
 
   public function pageMahasiswa() {
     if ($this->checkLoggedInUser()) {
       return $this->checkLoggedInUser();
     }
-    return view('admin.mahasiswa');
+    $listMahasiswa = Mahasiswa::all();
+    return view('admin.mahasiswa', compact('listMahasiswa'));
+  }
+
+  public function doBan(Request $request) {
+    $status = $request->submit == "Unban" ? 0 : 1;
+    if ($request->role == "dosen") {
+      $temp = Dosen::find($request->id)->update([
+        "dsn_status_ban"=>$status
+      ]);
+    }
+    else {
+      Mahasiswa::find($request->id)->update([
+        "dsn_status_ban"=>$status
+      ]);
+    }
+    return back();
   }
 
   public function pageMataKuliah() {

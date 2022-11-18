@@ -18,36 +18,25 @@
       </tr>
     </thead>
     <tbody>
+      @forelse ($listMahasiswa as $key=>$item)
       <tr class="odd:bg-slate-300 even:bg-slate-200">
-        <td class="px-2 py-1 text-center">1.</td>
-        <td class="px-2 py-1">220116925</td>
-        <td class="px-2 py-1">Kenny</td>
+        <td class="px-2 py-1 text-center">{{ $key + 1 }}</td>
+        <td class="px-2 py-1">{{ $item->mhs_nrp }}</td>
+        <td class="px-2 py-1">{{ $item->mhs_nama }}</td>
         <td class="text-center">
-          <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-            <i class="fa-solid fa-trash"></i>
-          </button>
+          <form action="{{ route('admin.doBan') }}" method="POST">
+            @csrf
+            <input type="hidden" name="role" value="mahasiswa">
+            <input type="hidden" name="id" value="{{ $item->mhs_nrp }}">
+            <input class="px-2 py-1 rounded text-gray-100 font-medium hover:bg-navy-primary active:bg-navy-secondary border border-gray-900 bg-navy-primary hover:cursor-pointer" type="submit" name="submit" value="{{ $item->mhs_status_ban == 1 ? "Unban" : "Ban" }}">
+          </form>
         </td>
       </tr>
+      @empty
       <tr class="odd:bg-slate-300 even:bg-slate-200">
-        <td class="px-2 py-1 text-center">2.</td>
-        <td class="px-2 py-1">220116896</td>
-        <td class="px-2 py-1">Victor Shielo</td>
-        <td class="text-center">
-          <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </td>
+        <td colspan="4" class="px-2 py-1 text-center">Kosong...</td>
       </tr>
-      <tr class="odd:bg-slate-300 even:bg-slate-200">
-        <td class="px-2 py-1 text-center">3.</td>
-        <td class="px-2 py-1">220116882</td>
-        <td class="px-2 py-1">Lele</td>
-        <td class="text-center">
-          <button class="px-2 py-1 hover:text-red-600 active:text-red-500">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </td>
-      </tr>
+      @endforelse
     </tbody>
   </table>
 

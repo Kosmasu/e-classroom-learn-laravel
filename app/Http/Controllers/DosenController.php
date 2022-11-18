@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use App\Models\AbsensiMahasiswa;
+use App\Models\Dosen;
 use App\Models\Kelas;
+use App\Models\Mahasiswa;
 use App\Models\MahasiswaModule;
 use App\Models\Module;
 use App\Models\Pengumuman;
@@ -371,7 +373,20 @@ class DosenController extends Controller
     return view('dosen.kelasDetailModule', compact('id', 'mod_id', 'listMahasiswa'));
   }
 
-  public function doGradeModule($id) {
+  public function pageSearch(Request $request) {
+    $q = $request->search ?? "";
+    $listMahasiswa = Mahasiswa::where('mhs_nama', 'like', '%'. $q . '%')->get();
+    $listDosen = Dosen::where('dsn_nama', 'like', '%'. $q . '%')->get();
+    return view('dosen.search', compact('listMahasiswa', 'listDosen'));
+  }
 
+  public function pageDetailMahasiswa($id) {
+    $mahasiswa = Mahasiswa::find($id)->attributesToArray();
+    return view('dosen.detailMahasiswa', compact('mahasiswa'));
+  }
+
+  public function pageDetailDosen($id) {
+    $dosen = Dosen::find($id)->attributesToArray();
+    return view('dosen.detailDosen', compact('dosen'));
   }
 }
